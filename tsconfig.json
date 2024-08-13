@@ -24,6 +24,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@/api/*": ["./src/api/*"],
+      "@/db/*": ["./src/api/db/*"],
       "@/helpers/*": ["./src/api/helpers/*"],
       "@/controllers/*": ["./src/api/controllers/*"],
       "@/routes/*": ["./src/api/routes/*"],
