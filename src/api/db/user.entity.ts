@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import {
   Entity,
   Column,
@@ -5,14 +6,13 @@ import {
   BeforeInsert,
   OneToOne,
 } from "typeorm";
-import { nanoid } from "nanoid";
 
 import { gender_enum, userRole } from "@/enum/user.enum";
-import { AccountBalance } from "@/api/db/userWallet.entity";
+import { AccountBalance } from "@/db/userWallet.entity";
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn("uuid")
   id: string;
 
   @Column()
@@ -41,6 +41,6 @@ export class User {
 
   @BeforeInsert()
   generateId() {
-    this.id = `userid-${nanoid()}`;
+    this.id = `userID-${uuidv4()}`;
   }
 }
