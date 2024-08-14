@@ -1,6 +1,8 @@
 import dotenv from "dotenv";
 import { DataSource } from "typeorm";
 import logging from "@/utils/logging";
+import { User } from "@/db/user.entity";
+import { AccountBalance } from "@/db/userWallet.entity";
 
 dotenv.config();
 
@@ -11,7 +13,7 @@ const TypeormConfig = new DataSource({
   username: process.env.DB_USER || undefined,
   password: process.env.DB_PWD || undefined,
   database: process.env.DB_NAME || undefined,
-  entities: [],
+  entities: [User, AccountBalance],
   synchronize: true, // set to false in prod
   logging: false,
 });
