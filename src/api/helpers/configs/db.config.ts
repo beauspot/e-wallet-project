@@ -6,7 +6,7 @@ import { AccountBalance } from "@/db/userWallet.entity";
 
 dotenv.config();
 
-const TypeormConfig = new DataSource({
+export const TypeormConfig = new DataSource({
   type: "mariadb",
   host: process.env.DB_HOST || "localhost",
   port: Number(process.env.DB_PORT) || undefined,
