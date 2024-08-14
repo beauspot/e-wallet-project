@@ -8,7 +8,7 @@ import {
 import { nanoid } from "nanoid";
 
 import { gender_enum, userRole } from "@/enum/user.enum";
-import { AccountBalance } from "@/db/userBalance.entity";
+import { AccountBalance } from "@/api/db/userWallet.entity";
 
 @Entity()
 export class User {
