@@ -18,7 +18,7 @@ export class User {
   @Column()
   fullName: string;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
 
   @Column()
@@ -27,16 +27,25 @@ export class User {
   @Column()
   password: string;
 
-  @Column()
-  bvn: number;
+  @Column({ unique: true, length: 11 })
+  nin: string;
 
-  @Column()
+  @Column({ unique: true, length: 11 })
+  bvn: string;
+
+  @Column({
+    type: "enum",
+    enum: gender_enum,
+  })
   gender: gender_enum;
 
   @OneToOne(() => AccountBalance, (accountBal) => accountBal.user)
   accountBalance: AccountBalance;
 
-  @Column()
+  @Column({
+    type: "enum",
+    enum: userRole,
+  })
   role: userRole;
 
   @BeforeInsert()
