@@ -4,14 +4,16 @@ import {
   PrimaryGeneratedColumn,
   OneToOne,
   JoinColumn,
+  BeforeInsert,
 } from "typeorm";
 
 import { User } from "@/db/user.entity";
+import { v4 as uuidv4 } from "uuid";
 
 @Entity()
 export class AccountBalance {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
   @Column({ type: "decimal", precision: 18, scale: 8, default: 0 })
   balance: string; // Store balance as a string to handle precision
@@ -19,4 +21,9 @@ export class AccountBalance {
   @OneToOne(() => User, (user) => user.accountBalance)
   @JoinColumn()
   user: User; // Reference to the User entity
+
+  @BeforeInsert()
+  generateId() {
+    this.id = `BAL-${uuidv4()}`;
+  }
 }
