@@ -4,11 +4,11 @@ import {
   Column,
   PrimaryGeneratedColumn,
   BeforeInsert,
-  OneToOne,
+  OneToMany,
 } from "typeorm";
 
 import { gender_enum, userRole } from "@/enum/user.enum";
-import { AccountBalance } from "@/db/userWallet.entity";
+import { NairaWalletEntity } from "@/api/db/wallets/nairaWallet.entity";
 
 @Entity()
 export class User {
@@ -39,8 +39,8 @@ export class User {
   })
   gender: gender_enum;
 
-  @OneToOne(() => AccountBalance, (accountBal) => accountBal.user)
-  accountBalance: AccountBalance;
+  @OneToMany(() => NairaWalletEntity, (wallte) => wallte.user)
+  wallets: NairaWalletEntity[];
 
   @Column({
     type: "enum",
