@@ -3,10 +3,10 @@ import validator from "validator";
 
 import { User } from "@/db/user.entity";
 import { gender_enum, userRole } from "@/enum/user.enum";
-import { TypeormConfig } from "@/configs/db.config";
+import { dataSource } from "@/configs/db.config";
 
 // initializing the repository
-const userRepo = TypeormConfig.getRepository(User);
+const userRepo = dataSource.getRepository(User);
 
 export const createUserSchema = object({
   body: object({
