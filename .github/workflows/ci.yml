@@ -22,7 +22,7 @@ jobs:
     strategy:
       matrix:
         # Providing node versions on which we can run the tests
-        node-version: ["20.x", "19.x", "18.x"]
+        node-version: ['20.x', '19.x', '18.x']
         
     # Setting up the steps needed to run the build & test stages.
     steps:
