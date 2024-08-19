@@ -1,9 +1,4 @@
-name: Swanky Backend CI # Declaring the name of the workflow
-
-# Telling the workflow what it should run and when to get started
-# Whenever code is pushed to the main branch and also when code is pushed to branches having names like feature-
-# It will also run whenever a pull request is raised on main or feature- branches.
-
+name: Swanky Backend CI 
 on: 
   push:
     branches:
@@ -13,40 +8,27 @@ on:
     branches:
       - main
       - feature-*
-
 jobs:
   build:
-    # Providing the machine to run the build
     runs-on: ubuntu-latest 
-
     strategy:
       matrix:
-        # Providing node versions on which we can run the tests
         node-version: ['20.x', '19.x', '18.x']
-        
-    # Setting up the steps needed to run the build & test stages.
     steps:
-      # Checks out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
       - uses: actions/checkout@v2
-
       - name: Use Node.js ${{ matrix.node-version }}
-        # Will set up the Node.js versions as defined in the build strategy where we have 
-        # mentioned the different Node.js versions we need for this build.
         uses: actions/setup-node@v2 
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-
-      # Installing supertest, jest, and ts-jest
+          cache: 'pnpm'
+      - name: Install pnpm package globally
+        run: npm install -g pnpm
       - name: Install dependencies
         run: pnpm install
-
       - name: Run build
         run: pnpm run build --if-present
-
       - name: Run tests
         run: pnpm test
-      
       - name: Test Reports
         uses: dorny/test-reporter@v1
         if: success() || failure()
@@ -54,12 +36,3 @@ jobs:
           name: Test Results
           path: ${{ github.workspace }}/reports/test-results.json
           reporter: 'jest-json'
-
-# Test Report is added which will be display 
-# the results summary once all the tests are run in 
-# the workflow, so any user can checkout
-# the summary of the tests run with its actual outcome
-# It uses dorny/test-reporter@v1, report will be generated if tests pass or fail, i.e
-# every time the workflow is run. It will pick data from the 
-# json file in the /reports/test-results.json file 
-# and jest-json reporter format would be used to show the report.
