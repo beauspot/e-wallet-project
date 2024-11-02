@@ -1,4 +1,4 @@
-name: Swanky Backend CI 
+name: e-wallet-CI 
 on: 
   push:
     branches:
