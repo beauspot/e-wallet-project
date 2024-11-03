@@ -2,10 +2,6 @@
  * This file is strictly for setting up environmental configurations
  */
 
-import dotenv from "dotenv";
-
-dotenv.config();
-
 export const DEVELOPMENT = process.env.SERVER_PORT === "development";
 export const TEST = process.env.NODE_ENV === "test";
 
