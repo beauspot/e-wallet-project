@@ -1,5 +1,5 @@
 {
-  "name": "swanky-back-end",
+  "name": "e-wallet_backend",
   "version": "1.2.1",
   "description": "E-wallet Backend RestAPI ",
   "main": "server.js",
@@ -40,6 +40,7 @@
     "swagger-ui-express": "^5.0.1",
     "tsconfig-paths": "^4.2.0",
     "typeorm": "^0.3.20",
+    "uuid": "^11.0.2",
     "validator": "^13.12.0",
     "winston": "^3.14.1",
     "yamljs": "^0.3.0",
