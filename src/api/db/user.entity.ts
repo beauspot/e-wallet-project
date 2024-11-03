@@ -8,7 +8,6 @@ import {
 } from "typeorm";
 
 import { gender_enum, userRole } from "@/enum/user.enum";
-import { NairaWalletEntity } from "@/api/db/wallets/nairaWallet.entity";
 
 @Entity()
 export class User {
@@ -38,9 +37,6 @@ export class User {
     enum: gender_enum,
   })
   gender: gender_enum;
-
-  @OneToMany(() => NairaWalletEntity, (wallte) => wallte.user)
-  wallets: NairaWalletEntity[];
 
   @Column({
     type: "enum",
