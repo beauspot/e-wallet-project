@@ -1,3 +1,0 @@
-This is where we write or CI/CD workflows 
-
-Every notes here would be used as a reference point
