@@ -1,7 +1,10 @@
 import dotenv from "dotenv";
 import { DataSource } from "typeorm";
 import logging from "@/utils/logging";
+
 import { User } from "@/db/user.entity";
+import { UserWallet } from "@/db/wallet.entity";
+import { UserTransactioModel } from "@/db/transactions.entity";
 
 dotenv.config();
 
@@ -14,6 +17,8 @@ export const dataSource = new DataSource({
   database: process.env.DB_NAME || undefined,
   entities: [
     User,
+    UserWallet,
+    UserTransactioModel,
   ],
   synchronize: true, // TODO: set to false in prod
   logging: false,
