@@ -50,9 +50,6 @@ export class UserTransactioModel extends BaseEntity {
     @Column({ nullable: true })
     description: string;
 
-    @CreateDateColumn()
-    createdAt: Date;
-
     @ManyToOne(() => User, (user) => user.transactions, { eager: true })
     @JoinColumn()
     user: User;
@@ -92,4 +89,12 @@ export class UserTransactioModel extends BaseEntity {
     async updateBalance() {
         await UserTransactioModel.sumBalance(this.user.id);
     }
+
+    @BeforeInsert()
+    generateId() {
+        this.id = `TransactionID-${uuidv4()}`;
+    };
+
+    @CreateDateColumn()
+    createdAt: Date;
 }
