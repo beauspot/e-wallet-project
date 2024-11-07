@@ -4,6 +4,7 @@ import logging from "@/utils/logging";
 
 import { User } from "@/db/user.entity";
 import { UserWallet } from "@/db/wallet.entity";
+import { SettlementAcct } from "@/db/settlementAccts.entity";
 import { UserTransactioModel } from "@/db/transactions.entity";
 
 dotenv.config();
@@ -18,6 +19,7 @@ export const dataSource = new DataSource({
   entities: [
     User,
     UserWallet,
+    SettlementAcct,
     UserTransactioModel,
   ],
   synchronize: true, // TODO: set to false in prod
