@@ -24,9 +24,6 @@ export class UserWallet extends BaseEntity {
   @Column()
   transaction_pin: number;
 
-  @CreateDateColumn()
-  createdAt: Date
-
   @OneToOne(() => User, (user) => user.wallet)
   @JoinColumn()
   user: User;
@@ -35,4 +32,7 @@ export class UserWallet extends BaseEntity {
   generateId() {
     this.id = `walletID-${uuidv4()}`;
   }
+
+  @CreateDateColumn()
+  createdAt: Date
 };
