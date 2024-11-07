@@ -12,6 +12,7 @@ import {
 
 import { UserWallet } from "@/db/wallet.entity"
 import { gender_enum, userRole } from "@/enum/user.enum";
+import { SettlementAcct } from "@/db/settlementAccts.entity";
 import { UserTransactioModel } from "@/db/transactions.entity";
 
 @Entity()
@@ -65,34 +66,40 @@ export class User {
   @Column({ unique: true })
   accountIdentifier: string;
 
-  @CreateDateColumn()
-  createdAt: Date;
+  @OneToOne(() => SettlementAcct, (settlementAcct) => settlementAcct.userAcct, {
+    cascade: true
+  })
+  @JoinColumn()
+  settlementAcct: SettlementAcct;
 
   @OneToOne(() => UserWallet, (wallet) => wallet.user, {
     cascade: true,
   })
-
   @JoinColumn()
   wallet: UserWallet;
 
   @OneToMany(() => UserTransactioModel, (transaction) => transaction.user, {
     cascade: true
   })
+  @JoinColumn()
   transactions: UserTransactioModel[];
-
-
-  @BeforeInsert()
-  generateId() {
-    this.id = `userID-${uuidv4()}`;
-  };
 
   @BeforeInsert()
   @OneToMany(() => UserTransactioModel, (transactions) => transactions.user, {
     cascade: true
   })
+  @JoinColumn()
 
   @BeforeInsert()
   generateAccountID() {
     this.accountIdentifier = this.phoneNumber
   }
+  
+  @BeforeInsert()
+  generateId() {
+    this.id = `userID-${uuidv4()}`;
+  };
+
+  @CreateDateColumn()
+  createdAt: Date;
 }
