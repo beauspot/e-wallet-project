@@ -13,7 +13,7 @@ import {
 import { UserWallet } from "@/db/wallet.entity"
 import { gender_enum, userRole } from "@/enum/user.enum";
 import { SettlementAcct } from "@/db/settlementAccts.entity";
-import { UserTransactioModel } from "@/db/transactions.entity";
+import { UserTransactionModel } from "@/db/transactions.entity";
 
 @Entity()
 export class User {
@@ -78,14 +78,14 @@ export class User {
   @JoinColumn()
   wallet: UserWallet;
 
-  @OneToMany(() => UserTransactioModel, (transaction) => transaction.user, {
+  @OneToMany(() => UserTransactionModel, (transaction) => transaction.user, {
     cascade: true
   })
   @JoinColumn()
-  transactions: UserTransactioModel[];
+  transactions: UserTransactionModel[];
 
   @BeforeInsert()
-  @OneToMany(() => UserTransactioModel, (transactions) => transactions.user, {
+  @OneToMany(() => UserTransactionModel, (transactions) => transactions.user, {
     cascade: true
   })
   @JoinColumn()

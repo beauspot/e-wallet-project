@@ -19,7 +19,7 @@ import { UserWallet } from "@/db/wallet.entity";
 import { TransactionStatus, TransactionType, PaymentType } from "@/enum/transactions.enum";
 
 @Entity()
-export class UserTransactioModel extends BaseEntity {
+export class UserTransactionModel extends BaseEntity {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
@@ -87,7 +87,7 @@ export class UserTransactioModel extends BaseEntity {
     @AfterInsert()
     @AfterUpdate()
     async updateBalance() {
-        await UserTransactioModel.sumBalance(this.user.id);
+        await UserTransactionModel.sumBalance(this.user.id);
     }
 
     @BeforeInsert()
