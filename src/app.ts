@@ -112,10 +112,8 @@ export class CreateAppServer {
     logging.log("----------------------------------------");
     this.app.get("/", (_, res: Response) => {
       res.send(
-        '<h1>API Documentation</h1><a href="/api-docs">Documentation</a>'
-      );
-     
-      res.json({ message: `e-wallet-api`, status: statusCode.OK });
+       '<h1>E-Wallet API Documentation</h1><a href="/api-docs">Documentation</a>'
+     );
     });
 
     // Routing goes here for the application
