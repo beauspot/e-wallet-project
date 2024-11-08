@@ -1,18 +1,18 @@
 enum TransactionStatus {
-    Pending = "Pending",
-    Successful = "Successful",
-    Failed = "Failed",
-    Flagged = "Flagged"
+    Pending = "pending",
+    Successful = "successful",
+    Failed = "failed",
+    Flagged = "flagged"
 };
 
 enum TransactionType {
-    Debit = "Debit",
-    Credit = "Credit",
+    Debit = "debit",
+    Credit = "credit",
 }
 
 enum PaymentType {
-    Card = "Card",
-    Account = "Account",
+    Card = "card",
+    Account = "account",
 }
 
 export { TransactionStatus, TransactionType, PaymentType };
