@@ -44,6 +44,6 @@
       "module": "commonjs"
     }
   },
-  "include": ["src/**/*.ts", "/src/types/**/*.d.ts"],
+  "include": ["src/**/*.ts", "/src/api/types/**/*.d.ts"],
   "exclude": ["node_modules", "package.json"]
 }
