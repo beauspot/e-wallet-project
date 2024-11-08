@@ -3,10 +3,10 @@ import validator from "validator";
 
 import { User } from "@/db/user.entity";
 import { gender_enum, userRole } from "@/enum/user.enum";
-import { dataSource } from "@/configs/db.config";
+import {  AppDataSource } from "@/configs/db.config";
 
 // initializing the repository
-const userRepo = dataSource.getRepository(User);
+const userRepo = AppDataSource.getRepository(User);
 
 export const createUserSchema = object({
   body: object({
