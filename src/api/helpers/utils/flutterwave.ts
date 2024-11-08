@@ -4,14 +4,15 @@ import Flutterwave from "flutterwave-node-v3";
 import logging from "@/utils/logging";
 import AppError from "@/utils/appErrors";
 import { AppDataSource } from "@/configs/db.config";
-import { TransactionStatus } from "@/enum/transactions.enum"
+import { TransactionStatus, TransactionType, PaymentType } from "@/enum/transactions.enum"
 import { UserTransactionModel } from "@/db/transactions.entity";
-import { CardChargePayload, AuthorizeCardPaymentPayload } from "@/interfaces/flutterwave.interface";
+import { CardChargePayload, AuthorizeCardPaymentPayload, TransferPayload, SubAccounts } from "@/interfaces/flutterwave.interface";
 
 const flw = new Flutterwave(
     `${process.env.FLUTTERWAVE_PUBLIC_KEY}`,
     `${process.env.FLUTTERWAVE_SECRET_KEY}`
 );
+
 
 
 const chargeCard = async (payload: CardChargePayload) => {
@@ -41,37 +42,21 @@ const chargeCard = async (payload: CardChargePayload) => {
     }
 };
 
-// helper function to map response to TransactionStatus enum
-
-function mapToTransactionStatus(status: string): TransactionStatus {
-    switch (status) {
-        case "successful":
-            return TransactionStatus.Successful;
-        case "failed":
-            return TransactionStatus.Failed;
-        case "cancelled":
-            return TransactionStatus.Flagged;
-        case "pending":
-            return TransactionStatus.Pending;
-        default:
-            throw new Error("Invalid transaction status");
-    }
-}
-
-
 const authorizeCardPayment = async (payload: AuthorizeCardPaymentPayload) => {
     // Add the OTP to authorize the transaction
     let transaction;
     let updateData = {
         reference: "",
         gatewayReference: "",
-        paymentType: "",
+        transactionType: TransactionType.Debit || TransactionType.Credit,
         amount: 0,
-        status: TransactionStatus.Pending,
+        currency: "₦",
+        receipient: "",
+        status: TransactionStatus.Pending || TransactionStatus.Successful || TransactionStatus.Failed || TransactionStatus.Flagged,
+        paymentType: PaymentType.Card || PaymentType.Account,
         description: "",
         deviceFingerprint: "",
-        currency: "",
-        user: payload.userId,
+        user: { id: payload.userId }, // use a partial entity object for `user` because of Typeorm
     };
 
     try {
@@ -80,15 +65,18 @@ const authorizeCardPayment = async (payload: AuthorizeCardPaymentPayload) => {
             flw_ref: payload.flw_ref,
         });
 
+        logging.log(response);
+
         updateData.reference = response.data.tx_ref;
         updateData.gatewayReference = response.data.flw_ref;
-        updateData.paymentType = response.data.payment_type;
+        updateData.paymentType = response.data.payment_type as PaymentType;
+        updateData.transactionType = response.data.transaction_type as TransactionType;
         updateData.amount = Number(response.data.amount);
-        updateData.status = mapToTransactionStatus(response.data.status);
+        updateData.status = response.data.status as TransactionStatus;
         updateData.description = response.data.narration;
         updateData.deviceFingerprint = response.data.device_fingerprint;
         updateData.currency = response.data.currency;
-        updateData.user = payload.userId;
+        updateData.user = response.payload.userId;
 
         if (
             response.data.status === "successful" ||
@@ -101,22 +89,25 @@ const authorizeCardPayment = async (payload: AuthorizeCardPaymentPayload) => {
             const query = { gatewayReference: transaction.data.flw_ref };
 
             // TODO: anywhere you see "Transaction", change to "UserTransactionModel"
+            // TODO: setting the TransactioType properly for the updateData.
             await AppDataSource.getRepository(UserTransactionModel).update(query, updateData);
             return transaction;
         }
 
-        updateData.status = "failed";
+        updateData.status = TransactionStatus.Failed || TransactionStatus.Flagged;
+
+        // TODO: setting the TransactioType properly for the updateData.
         await AppDataSource.getRepository(UserTransactionModel).update({ gatewayReference: response.data.flw_ref }, updateData);
 
         return response;
     } catch (error: any) {
-        logging.error("Error authorizing card payment", error);
+        logging.error("Error authorizing card payment", error.message);
         throw new AppError(error.message, "400", false);
     }
 };
 
 /*****  Transfers  *****/
-const transfer = async (payload) => {
+const transfer = async (payload: TransferPayload) => {
     // transfer directly to another customer using myWallet
     try {
         const response = await flw.Transfer.initiate(payload);
@@ -129,7 +120,7 @@ const transfer = async (payload) => {
 
 /*****  subaccount creation  *****/
 
-const createSubaccount = async (payload) => {
+const createSubaccount = async (payload: SubAccounts) => {
     try {
         const response = await flw.Subaccount.create(payload);
         logging.log(response);
@@ -137,7 +128,7 @@ const createSubaccount = async (payload) => {
         logging.error(error);
     }
 };
-const fetchSubaccount = async (payload) => {
+const fetchSubaccount = async (payload: SubAccounts) => {
     try {
         const response = await flw.Subaccount.fetch(payload);
         logging.log(response);
