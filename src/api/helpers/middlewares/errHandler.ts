@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import CustomAPIError from "@/utils/custom_errors";
+import AppError from "@/api/helpers/utils/appErrors";
 import logging from "@/utils/logging";
 
 const errorHandlerMiddleware = (
@@ -9,8 +9,8 @@ const errorHandlerMiddleware = (
   next: NextFunction
 ) => {
   logging.error(err);
-  if (err instanceof CustomAPIError)
-    return res.status(err.statusCode).json({ msg: err.message });
+  if (err instanceof AppError)
+    return res.status(err.statusCode!).json({ msg: err.message });
 
   next();
 };
