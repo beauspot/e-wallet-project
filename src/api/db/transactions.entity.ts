@@ -64,7 +64,6 @@ export class UserTransactionModel extends BaseEntity {
     /* 
     Calculating the total balance for users after each successful transaction
     */
-
     static async sumBalance(userId: string) {
         const result = await this.createQueryBuilder("transaction")
             .select("SUM(transaction.amount)", "transactionSum")
