@@ -15,7 +15,7 @@ export class Email {
         this.to = user.email;
         this.firstName = user.firstName;
         this.resetToken = resetToken;
-        this.from = `SpecsPay <${process.env.EMAIL_FROM}>`;
+        this.from = ` E-walletPay <${process.env.EMAIL_FROM}>`;
     }
 
     private newTransport() {
