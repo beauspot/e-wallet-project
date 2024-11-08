@@ -156,6 +156,9 @@ importers:
       '@types/node':
         specifier: ^22.2.0
         version: 22.2.0
+      '@types/nodemailer':
+        specifier: ^6.4.16
+        version: 6.4.16
       '@types/swagger-ui-express':
         specifier: ^4.1.6
         version: 4.1.6
@@ -669,6 +672,9 @@ packages:
 
   '@types/node@22.2.0':
     resolution: {integrity: sha512-bm6EG6/pCpkxDf/0gDNDdtDILMOHgaQBVOJGdwsqClnxA3xL6jtMv76rLBc006RVMWbmaf0xbmom4Z/5o2nRkQ==}
+
+  '@types/nodemailer@6.4.16':
+    resolution: {integrity: sha512-uz6hN6Pp0upXMcilM61CoKyjT7sskBoOWpptkjjJp8jIMlTdc3xG01U7proKkXzruMS4hS0zqtHNkNPFB20rKQ==}
 
   '@types/qs@6.9.15':
     resolution: {integrity: sha512-uXHQKES6DQKKCLh441Xv/dwxOq1TVS3JPUMlEqoEglvlhR6Mxnlew/Xq/LRVHpLyk7iK3zODe1qYHIMltO7XGg==}
@@ -3638,6 +3644,10 @@ snapshots:
   '@types/node@22.2.0':
     dependencies:
       undici-types: 6.13.0
+
+  '@types/nodemailer@6.4.16':
+    dependencies:
+      '@types/node': 22.2.0
 
   '@types/qs@6.9.15': {}
 
