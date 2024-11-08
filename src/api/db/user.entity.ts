@@ -64,7 +64,7 @@ export class User {
   role: userRole;
 
   @Column({ unique: true })
-  accountIdentifier: string;
+  account_no: string;
 
   @OneToOne(() => SettlementAcct, (settlementAcct) => settlementAcct.userAcct, {
     cascade: true
@@ -92,7 +92,7 @@ export class User {
 
   @BeforeInsert()
   generateAccountID() {
-    this.accountIdentifier = this.phoneNumber
+    this.account_no = this.phoneNumber
   }
   
   @BeforeInsert()
