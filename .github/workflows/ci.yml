@@ -1,38 +1,46 @@
-name: e-wallet-CI 
-on: 
+name: e-wallet-CI
+
+on:
   push:
     branches:
       - main
-      - feature-*
+      - 'feature-*'
   pull_request:
     branches:
       - main
-      - feature-*
+      - 'feature-*'
+
 jobs:
   build:
-    runs-on: ubuntu-latest 
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: ['22.x', '19.x', '18.x']
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2 
+      
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
+          cache: pnpm
+
       - name: Install pnpm package globally
         run: npm install -g pnpm
+      
       - name: Install dependencies
         run: pnpm install
+
       - name: Run build
         run: pnpm run build --if-present
+      
       - name: Run tests
         run: pnpm test
+      
       - name: Test Reports
         uses: dorny/test-reporter@v1
-        if: success() || failure()
+        if: always()  # Ensure test report step runs regardless of success or failure
         with:
           name: Test Results
-          path: ${{ github.workspace }}/reports/test-results.json
-          reporter: 'jest-json'
+          path: reports/test-results.json
+          reporter: jest-json
