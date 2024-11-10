@@ -45,5 +45,22 @@ interface SubAccounts {
     split_value?: number;
 }
 
+interface virtualAccountPayload {
+    email: string;
+    bvn: string;
+    tx_ref: string;
+    is_permanent?: boolean;
+    firstName?: string;
+    lastName?: string;
+    phoneNumber?: string;
+    narration?: string;
+}
 
-export { CardChargePayload, AuthorizeCardPaymentPayload, TransferPayload, SubAccounts };
+
+export {
+    CardChargePayload,
+    AuthorizeCardPaymentPayload,
+    TransferPayload,
+    SubAccounts,
+    virtualAccountPayload
+};
