@@ -20,7 +20,7 @@ const flw = new Flutterwave(
 );
 */
 
-class Flw {
+export class Flw {
     constructor(private flutterWave: typeof Flutterwave, private publicKey: string, private secretKey: string, private userTransactionModel: typeof UserTransactionModel) {
         this. flutterWave = new Flutterwave(this.publicKey, this.secretKey)
      }
