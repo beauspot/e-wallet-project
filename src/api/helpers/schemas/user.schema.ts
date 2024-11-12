@@ -10,8 +10,17 @@ const userRepo = AppDataSource.getRepository(User);
 
 export const createUserSchema = object({
   body: object({
-    fullName: string({
+    firstName: string({
       required_error: "User First name is required",
+    }),
+    middleName: string({
+      required_error: "User First name is required",
+    }),
+    lastName: string({
+      required_error: "User First name is required",
+    }),
+    phoneNumber: string({
+      required_error: "Your Phone-number is required"
     }),
     email: string({
       required_error: "Email is required",
@@ -59,7 +68,7 @@ export const createUserSchema = object({
           message: `This User's Bvn is already in use.`,
         }
       ),
-    date_of_birth: date({
+    dob: date({
       required_error: "Your Date of Birth is required",
     }).refine(
       (dob) => {
