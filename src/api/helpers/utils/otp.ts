@@ -28,7 +28,7 @@ const sendOtp = async (phoneNumber: string) => {
     }
 };
 
-const verifyOtp = async (phoneNumber: string, otp: number) => {
+const verifyOtp = async (phoneNumber: string, otp: string) => {
     const client = require("twilio")(accountSid, authToken);
 
     try {
