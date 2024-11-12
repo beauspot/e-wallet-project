@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
+import * as bcrypt from "bcryptjs";
 import {
   Entity,
   Column,
@@ -8,9 +9,10 @@ import {
   OneToOne,
   JoinColumn,
   CreateDateColumn,
+  UpdateDateColumn,
 } from "typeorm";
-
-import { UserWallet } from "@/db/wallet.entity"
+import crypto from "crypto";
+import { UserWallet } from "@/db/wallet.entity";
 import { gender_enum, userRole } from "@/enum/user.enum";
 import { SettlementAcct } from "@/db/settlementAccts.entity";
 import { UserTransactionModel } from "@/db/transactions.entity";
@@ -23,13 +25,13 @@ export class User {
   @Column({ nullable: false })
   firstName: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   middleName: string;
 
   @Column({ nullable: false })
   lastName: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, unique: true })
   phoneNumber: string;
 
   @Column({ unique: true, nullable: false })
@@ -38,7 +40,6 @@ export class User {
   @Column({ nullable: false })
   dob: Date;
 
-  // ToDO: the password must be hashed.
   @Column({ nullable: false })
   password: string;
 
@@ -66,8 +67,53 @@ export class User {
   @Column({ unique: true })
   account_no: string;
 
+  @Column({ nullable: true })
+  businessName: string;
+
+  @Column({ nullable: true })
+  accountName: string;
+
+  @Column({ nullable: true, type: "bigint" })
+  accountNumber: number;
+
+  @Column({ nullable: true })
+  GovernmentIDImage: string;
+
+  @Column({ nullable: true, default: "default.jpg" })
+  photo: string;
+
+  @Column({ nullable: true })
+  state: string;
+
+  @Column({ nullable: true })
+  lga: string;
+
+  @Column({ nullable: true })
+  address: string;
+
+  @Column({ nullable: true })
+  description: string;
+
+  @Column({ default: true, select: false })
+  active: boolean;
+
+  @Column({ nullable: true })
+  passwordChangedAt: Date;
+
+  @Column({ nullable: true })
+  passwordResetToken: string;
+
+  @Column({ nullable: true, type: "timestamp" })
+  passwordResetExpires: Date;
+
+  @Column({ default: 0 })
+  passwordResetAttempts: number;
+
+  @Column({ nullable: true, default: false })
+  acceptTerms: boolean;
+
   @OneToOne(() => SettlementAcct, (settlementAcct) => settlementAcct.userAcct, {
-    cascade: true
+    cascade: true,
   })
   @JoinColumn()
   settlementAcct: SettlementAcct;
@@ -79,27 +125,48 @@ export class User {
   wallet: UserWallet;
 
   @OneToMany(() => UserTransactionModel, (transaction) => transaction.user, {
-    cascade: true
+    cascade: true,
   })
-  @JoinColumn()
   transactions: UserTransactionModel[];
 
   @BeforeInsert()
-  @OneToMany(() => UserTransactionModel, (transactions) => transactions.user, {
-    cascade: true
-  })
-  @JoinColumn()
-
-  @BeforeInsert()
   generateAccountID() {
-    this.account_no = this.phoneNumber
+    this.account_no = this.phoneNumber;
   }
-  
+
   @BeforeInsert()
   generateId() {
     this.id = `userID-${uuidv4()}`;
-  };
+  }
+
+  @BeforeInsert()
+  async hashPassword() {
+    this.password = await bcrypt.hash(this.password, 12);
+  }
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  async comparePassword(candidatePassword: string): Promise<boolean> {
+    return bcrypt.compare(candidatePassword, this.password);
+  }
+
+  createPasswordResetToken(): string {
+    const otp = crypto.randomBytes(3).toString("hex");
+    this.passwordResetToken = crypto.createHash("sha256").update(otp).digest("hex");
+    this.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
+    this.passwordResetAttempts = 0;
+    return otp;
+  }
+
+  changedPasswordAfter(JWTTimestamp: number): boolean {
+    if (this.passwordChangedAt) {
+      const changedTimestamp = Math.floor(this.passwordChangedAt.getTime() / 1000);
+      return JWTTimestamp < changedTimestamp;
+    }
+    return false;
+  }
 }
