@@ -26,6 +26,7 @@ export class UserService {
         });
     };
 
+    // not needed as it already takes place on the corresponding model.
     private async hashPassword(password: string): Promise<string> {
         const saltRounds = 12;
         return bcrypt.hash(password, saltRounds);
