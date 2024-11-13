@@ -42,6 +42,10 @@ export class UserService {
         return bcrypt.hash(pin, saltRounds);
     }
 
+    private async verifyPin(pin: string, hashedPin: string): Promise<boolean> {
+        return bcrypt.compare(pin, hashedPin)
+    }
+
     // TODO: this belongs to the controller => Remember!!!
     async createSendToken(user: User, res: any) {
         const token = this.signToken(user.id);
@@ -56,6 +60,8 @@ export class UserService {
         return { user, token };
     };
 
+    // TODO: There are 2 categories of users admin & customer.
+    // TODO: need to setup endpoint to check for customer & admin
     async registerUser(userData: Partial<userInterface>, pin: string) {
         try {
             const hashedPin = await this.hashPin(pin);
