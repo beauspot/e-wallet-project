@@ -73,9 +73,6 @@ export class User {
   @Column({ nullable: true })
   accountName: string;
 
-  @Column({ nullable: true, type: "bigint" })
-  accountNumber: number;
-
   @Column({ nullable: true })
   GovernmentIDImage: string;
 
@@ -137,11 +134,6 @@ export class User {
   @BeforeInsert()
   generateId() {
     this.id = `userID-${uuidv4()}`;
-  }
-
-  @BeforeInsert()
-  async hashPassword() {
-    this.password = await bcrypt.hash(this.password, 12);
   }
 
   @CreateDateColumn()

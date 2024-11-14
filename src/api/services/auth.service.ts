@@ -81,9 +81,10 @@ export class UserService {
     async registerUser(userData: Partial<userInterface>, pin: string) {
         try {
             const hashedPin = await this.hashPin(pin);
+            const hashedPassword = userData.password ? await this.hashPassword(userData.password) : undefined;
 
             const UserRepository = AppDataSource.getRepository(this.userEntity)
-            const user = UserRepository.create(userData);
+            const user = UserRepository.create({ ...userData, password: hashedPassword});
             const savedUser = await UserRepository.save(user);
 
             const UserWalletRepo = AppDataSource.getRepository(this.userwalletEntity)
@@ -106,7 +107,7 @@ export class UserService {
             const user = await AppDataSource.getRepository(this.userEntity).findOne({ where: { phoneNumber }, select: ["password"] });
 
             if (!user || !(await this.verifyPassword(password, user.password)))
-                throw new AppError("Incorrect phone number or password", "failed", false);
+                throw new AppError("Incorrect password", "failed", false);
 
             return user;
         } catch (error: any) {
