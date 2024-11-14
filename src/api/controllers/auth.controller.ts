@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
+
+import AppError from "@/utils/appErrors";
 import { plainToInstance } from "class-transformer";
 import { UserService } from "@/services/auth.service";
 import { ExtendRequest } from "@/interfaces/extendRequest.interface";
@@ -71,7 +73,9 @@ export class UserController {
     async updatePassword(req: ExtendRequest, res: Response, next: NextFunction) {
         try {
             const { currentPassword, newPassword } = req.body;
-            const userId = req.user.id;  // Assume userId is extracted from a middleware
+            const userId = req?.user?.id;  // Assume userId is extracted from a middleware
+            if (!userId)
+                throw new AppError("Unauthorized", "User ID is missing.", false, StatusCodes.UNAUTHORIZED);
             const token = await this.userService.updatePassword(userId, currentPassword, newPassword);
             res.status(StatusCodes.OK).json({ message: "Password updated successfully", token });
         } catch (error: any) {
