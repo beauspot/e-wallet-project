@@ -16,6 +16,9 @@ import __404_err_page from "@/middlewares/__404_notfound";
 import errorHandlerMiddleware from "@/middlewares/errHandler";
 import { logging_middleware } from "@/middlewares/loggingmiddleware";
 
+// Router
+import authRouter from "@/routes/users.routes";
+
 /// <reference path="./api/types/express/custom.d.ts" />
 
 const limiter = rateLimit({
@@ -117,6 +120,7 @@ export class CreateAppServer {
     });
 
     // Routing goes here for the application
+    this.app.use("/auth", authRouter)
 
     this.app.all("*", __404_err_page);
 
