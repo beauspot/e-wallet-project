@@ -3,6 +3,7 @@ import * as bcrypt from "bcryptjs";
 import * as jwt from "jsonwebtoken";
 import crypto from "crypto"
 import { Service } from "typedi";
+import { Response } from "express";
 
 // Entities imported
 import { User } from "@/db/user.entity";
@@ -47,7 +48,7 @@ export class UserService {
     }
 
     // TODO: this belongs to the controller => Remember!!!
-    async createSendToken(user: User, res: any) {
+    async createSendToken(user: User, res: Response) {
         const token = this.signToken(user.id);
 
         res.cookie("jwt", token, {
@@ -205,7 +206,6 @@ export class UserService {
         } catch (error: any) {
             throw new AppError("Error", `${error.message}`, false);
         }
-      
     }
 
     private createPasswordResetToken(user: User) {
