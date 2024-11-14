@@ -21,6 +21,14 @@ export class UserService {
     
     constructor(private userEntity: typeof User, private userwalletEntity: typeof UserWallet) { }
 
+    async SendOtp(phoneNumber: string) {
+        return sendOtp(phoneNumber);
+    }
+
+    async VerifyOtp(phoneNumber: string, otp: string) {
+        return verifyOtp(phoneNumber, otp);
+    }
+
     signToken(userId: string): string {
         return jwt.sign({ id: userId }, process.env.JWT_SECRET!, {
             expiresIn: process.env.JWT_EXPIRES_IN,
@@ -100,14 +108,6 @@ export class UserService {
         }
     }
 
-    async SendOtp(phoneNumber: string) {
-        return sendOtp(phoneNumber);
-    }
-
-    async VerifyOtp(phoneNumber: string, otp: string) {
-        return verifyOtp(phoneNumber, otp);
-    }
-
     async verifyBvnData(firstName: string, lastName: string, bvn: string, dob: Date) {
         try {
             const result = await verifyBvn(firstName, lastName, bvn, dob);
@@ -118,35 +118,6 @@ export class UserService {
             throw new AppError("Error Verrifying BVN", `${error.message}`, false);
         }
        
-    }
-
-    async protect(token: string) {
-        if (!token) throw new Error("You are not logged in! Please log in to get access.");
-        try {
-            // Wrap `jwt.verify` in a Promise to handle the token verification with both arguments
-            const decoded = await new Promise<any>((resolve, reject) => {
-                jwt.verify(token, process.env.JWT_SECRET!, (err, decodedToken) => {
-                    if (err) {
-                        reject(new Error("Invalid token or token has expired."));
-                    } else {
-                        resolve(decodedToken);
-                    }
-                });
-            });
-
-            const user = await AppDataSource.getRepository(this.userEntity).findOne({ where: { id: decoded.id } });
-            if (!user) throw new Error("The user belonging to this token no longer exists.");
-
-            // Check if user changed their password after the JWT was issued
-            if (user.passwordChangedAt && decoded.iat < Math.floor(user.passwordChangedAt.getTime() / 1000)) {
-                throw new Error("User recently changed password! Please log in again.");
-            }
-
-            return user;
-        } catch (error: any) {
-            throw new AppError("Error", `${error.message}`, false);
-        }
-    
     }
 
     async forgotPassword(email: string) {
