@@ -185,4 +185,12 @@ export class UserService {
             throw new AppError("Error", `${error.message}`, false);
         }
     }
+
+    async logout(res: Response) {
+        // set the cookie to expire immediately
+        res.cookie("jwt", "loggedout", {
+            expires: new Date(Date.now() + 10 * 1000),
+            httpOnly: true,
+        })
+    }
 }

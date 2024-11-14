@@ -92,4 +92,10 @@ export class UserController {
             next(error.message);
         }
     }
+
+    async logoutUser(req: Request, res: Response) {
+        // Call the logout service to clear the jwt cookie 
+        await this.userService.logout(res);
+        res.status(StatusCodes.OK).json({ status: `${res.locals.user}, successful` });
+    }
 }
