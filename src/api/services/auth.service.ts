@@ -22,11 +22,25 @@ export class UserService {
     constructor(private userEntity: typeof User, private userwalletEntity: typeof UserWallet) { }
 
     async SendOtp(phoneNumber: string) {
-        return sendOtp(phoneNumber);
+        try {
+            if (!phoneNumber) {
+                throw new AppError("There was an error Sending the otp", "failed", false) 
+            }
+            const otp = await sendOtp(phoneNumber);
+            return otp;
+        } catch (error: any) {
+            throw new AppError(`${error.message}`, "failed", false)
+        }
     }
 
     async VerifyOtp(phoneNumber: string, otp: string) {
-        return verifyOtp(phoneNumber, otp);
+        try {
+            if (!phoneNumber || !otp) throw new AppError("There was an error Sending the otp", "failed", false)
+            const verifiedOTP = verifyOtp(phoneNumber, otp);
+            return verifiedOTP;
+        } catch (error: any) {
+            throw new AppError(`${error.message}`, "failed", false)
+        }
     }
 
     signToken(userId: string): string {

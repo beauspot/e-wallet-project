@@ -14,8 +14,8 @@ export class UserController {
             const { userData, pin } = req.body;
             const result = await this.userService.registerUser(userData, pin);
             res.status(StatusCodes.CREATED).json(result);
-        } catch (error) {
-            next(error);
+        } catch (error:any) {
+            throw new AppError(`${error.message}`, "failed", false, StatusCodes.SERVICE_UNAVAILABLE)
         }
     }
 
@@ -26,7 +26,7 @@ export class UserController {
             const tokenData = await this.userService.createSendToken(user, res);
             res.status(StatusCodes.OK).json(tokenData);
         } catch (error: any) {
-            next(error.message);
+            throw new AppError(`${error.message}`, "failed", false, StatusCodes.SERVICE_UNAVAILABLE)
         }
     }
 
@@ -36,7 +36,7 @@ export class UserController {
             const otp = await this.userService.SendOtp(phoneNumber);
             res.status(StatusCodes.OK).json({ message: "OTP sent successfully", otp });
         } catch (error: any) {
-            next(error.message);
+            throw new AppError(`${error.message}`, "failed", false, StatusCodes.SERVICE_UNAVAILABLE)
         }
     }
 
@@ -46,7 +46,7 @@ export class UserController {
             const verified = await this.userService.VerifyOtp(phoneNumber, otp);
             res.status(StatusCodes.OK).json({ message: "OTP verified", verified });
         } catch (error: any) {
-            next(error.message);
+            throw new AppError(`${error.message}`, "failed", false, StatusCodes.SERVICE_UNAVAILABLE)
         }
     }
 
@@ -56,7 +56,7 @@ export class UserController {
             const resetToken = await this.userService.forgotPassword(email);
             res.status(StatusCodes.OK).json({ message: "Password reset email sent", resetToken });
         } catch (error: any) {
-            next(error.message);
+            throw new AppError(`${error.message}`, "failed", false, StatusCodes.SERVICE_UNAVAILABLE)
         }
     }
 
@@ -66,7 +66,7 @@ export class UserController {
             const token = await this.userService.resetPassword(email, otp, newPassword, passwordConfirm);
             res.status(StatusCodes.OK).json({ message: "Password reset successful", token });
         } catch (error: any) {
-            next(error.message);
+            throw new AppError(`${error.message}`, "failed", false, StatusCodes.SERVICE_UNAVAILABLE)
         }
     }
 
@@ -79,7 +79,7 @@ export class UserController {
             const token = await this.userService.updatePassword(userId, currentPassword, newPassword);
             res.status(StatusCodes.OK).json({ message: "Password updated successfully", token });
         } catch (error: any) {
-            next(error.message);
+            throw new AppError(`${error.message}`, "failed", false, StatusCodes.SERVICE_UNAVAILABLE)
         }
     }
 
@@ -89,7 +89,7 @@ export class UserController {
             const result = await this.userService.verifyBvnData(firstName, lastName, bvn, dob);
             res.status(StatusCodes.OK).json({ message: "BVN verified", result });
         } catch (error: any) {
-            next(error.message);
+            throw new AppError(`${error.message}`, "failed", false, StatusCodes.SERVICE_UNAVAILABLE)
         }
     }
 
