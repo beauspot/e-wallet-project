@@ -1,6 +1,6 @@
 import { gender_enum, userRole } from "@/enum/user.enum";
 
-export interface userInterface {
+interface userInterface {
   firstName: string;
   middleName: string;
   lastName: string;
@@ -15,3 +15,10 @@ export interface userInterface {
   account_no: string;
   date_of_birth: Date;
 }
+
+interface DecodedToken {
+  id: string;
+  iat: number;
+};
+
+export { userInterface, DecodedToken };
