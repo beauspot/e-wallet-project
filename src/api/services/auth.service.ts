@@ -35,6 +35,13 @@ export class UserService {
         });
     };
 
+    private createPasswordResetToken(user: User) {
+        const resetToken = crypto.randomBytes(32).toString("hex");
+        user.passwordResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+        user.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 min expiration
+        return resetToken;
+    }
+
     // not needed as it already takes place on the corresponding model.
     private async hashPassword(password: string): Promise<string> {
         const saltRounds = 12;
@@ -177,12 +184,5 @@ export class UserService {
         } catch (error: any) {
             throw new AppError("Error", `${error.message}`, false);
         }
-    }
-
-    private createPasswordResetToken(user: User) {
-        const resetToken = crypto.randomBytes(32).toString("hex");
-        user.passwordResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
-        user.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 min expiration
-        return resetToken;
     }
 }
