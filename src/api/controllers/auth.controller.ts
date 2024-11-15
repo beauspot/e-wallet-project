@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
 
+import logging from "@/utils/logging"
 import AppError from "@/utils/appErrors";
 import { plainToInstance } from "class-transformer";
 import { UserService } from "@/services/auth.service";
@@ -31,13 +32,10 @@ export class UserController {
     }
 
     async sendOtp(req: Request, res: Response, next: NextFunction) {
-        try {
-            const { phoneNumber } = req.body;
-            const otp = await this.userService.SendOtp(phoneNumber);
-            res.status(StatusCodes.OK).json({ message: "OTP sent successfully", otp });
-        } catch (error: any) {
-            throw new AppError(`${error.message}`, "failed", false, StatusCodes.SERVICE_UNAVAILABLE)
-        }
+        const { phoneNumber } = req.body;
+        logging.info(phoneNumber)
+        const otp = await this.userService.SendOtp(phoneNumber);
+        res.status(StatusCodes.OK).json({ message: "OTP sent successfully", otp });
     }
 
     async verifyOtp(req: Request, res: Response, next: NextFunction) {
