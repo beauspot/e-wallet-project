@@ -12,35 +12,23 @@ import { UserWallet } from "@/db/wallet.entity";
 import { Email } from "@/utils/email";
 import AppError from "@/utils/appErrors";
 import { verifyBvn } from "@/utils/dojah";
-import { sendOtp, verifyOtp } from "@/utils/otp"
+import { TwilioConfig } from "@/api/helpers/utils/twilio"
 import { AppDataSource } from "@/configs/db.config";
 import { userInterface } from "@/interfaces/user.interface";
 
 @Service()
 export class UserService {
     
-    constructor(private userEntity: typeof User, private userwalletEntity: typeof UserWallet) { }
+    constructor(private userEntity: typeof User, private userwalletEntity: typeof UserWallet, public twilio: TwilioConfig) { }
 
     async SendOtp(phoneNumber: string) {
-        try {
-            if (!phoneNumber) {
-                throw new AppError("There was an error Sending the otp", "failed", false) 
-            }
-            const otp = await sendOtp(phoneNumber);
-            return otp;
-        } catch (error: any) {
-            throw new AppError(`${error.message}`, "failed", false)
-        }
+        const otp = await this.twilio.sendOtp(phoneNumber);
+        return otp;
     }
 
     async VerifyOtp(phoneNumber: string, otp: string) {
-        try {
-            if (!phoneNumber || !otp) throw new AppError("There was an error Sending the otp", "failed", false)
-            const verifiedOTP = verifyOtp(phoneNumber, otp);
-            return verifiedOTP;
-        } catch (error: any) {
-            throw new AppError(`${error.message}`, "failed", false)
-        }
+        const verifiedOTP = await this.twilio.verifyOtp(phoneNumber, otp);
+        return verifiedOTP;
     }
 
     signToken(userId: string): string {
