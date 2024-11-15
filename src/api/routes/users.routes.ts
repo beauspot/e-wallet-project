@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { User } from "@/db/user.entity";
+import { TwilioConfig } from "@/api/helpers/utils/twilio"
 import { protect } from "@/middlewares/protect";
 import { UserWallet } from "@/db/wallet.entity";
 import { UserService } from "@/services/auth.service";
@@ -8,7 +9,8 @@ import { Request, Response, NextFunction } from "express";
 import { UserController } from "@/controllers/auth.controller";
 import { ExtendRequest } from "@/interfaces/extendRequest.interface";
 
-const user_service = new UserService(User, UserWallet);
+const twilioConfigInstance = new TwilioConfig("", "");
+const user_service = new UserService(User, UserWallet, twilioConfigInstance);
 const user_controller = new UserController(user_service);
 
 
