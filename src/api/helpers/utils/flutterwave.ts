@@ -75,7 +75,7 @@ export class Flw {
                 flw_ref: payload.flw_ref,
             });
 
-            logging.log(response);
+             logging.info(response);
 
             updateData.reference = response.data.tx_ref;
             updateData.gatewayReference = response.data.flw_ref;
@@ -134,7 +134,7 @@ export class Flw {
     createSubaccount = async (payload: SubAccounts) => {
         try {
             const response = await this.flutterWave.Subaccount.create(payload);
-            logging.log(response);
+            logging.info(response);
         } catch (error: any) {
             logging.error(error);
         }
@@ -142,9 +142,9 @@ export class Flw {
     fetchSubaccount = async (payload: SubAccounts) => {
         try {
             const response = await this.flutterWave.Subaccount.fetch(payload);
-            logging.log(response);
-        } catch (error) {
-            logging.log(error);
+            logging.info(response);
+        } catch (error: any) {
+            logging.error(error);
         }
     };
 
@@ -160,7 +160,7 @@ export class Flw {
                 phoneNumber: payload.phoneNumber,
                 narration: payload.narration
             });
-            logging.log(`Virtual account Payload: ${response}`);
+            logging.info(`Virtual account Payload: ${response}`);
             return response;
         } catch (error: any) {
             logging.error(error.message);

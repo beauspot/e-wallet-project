@@ -27,16 +27,16 @@ export class TwilioConfig {
                 .services(serviceSid)
                 .verifications.create({ channel: "sms", to: formattedPhoneNumber, });
 
-            logging.log({
+            logging.info({
                 serviceSid,
                 to: formattedPhoneNumber,
                 code: this.otp,
             });
 
-            logging.log(verification);
-            logging.log(verification.status);
-            logging.log(`Account SID: ${accountSid}, AuthToken: ${authToken}, Service SID: ${serviceSid}`);
-            logging.log("Verification sent", verification)
+            logging.info(verification);
+            logging.info(verification.status);
+            logging.info(`Account SID: ${accountSid}, AuthToken: ${authToken}, Service SID: ${serviceSid}`);
+            logging.info("Verification sent", verification)
 
             return verification;
         } catch (error: any) {
@@ -52,7 +52,7 @@ export class TwilioConfig {
             const verificationCheck = await client.verify.v2
                 .services(serviceSid)
                 .verificationChecks.create({ to: phoneNumber, code: otp });
-            logging.log("verificationCheck", verificationCheck);
+            logging.info("verificationCheck", verificationCheck);
             return verificationCheck.status;
         } catch (error: any) {
             logging.error(error.message);

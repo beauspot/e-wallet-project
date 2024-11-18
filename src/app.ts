@@ -8,7 +8,7 @@ import cookieParser from "cookie-parser";
 import helmet, { HelmetOptions } from "helmet";
 import express, { Express, Response } from "express";
 
-import logging from "@/helpers/utils/logging";
+import logging from "@/utils/logging";
 
 import __404_err_page from "@/middlewares/__404_notfound";
 import errorHandlerMiddleware from "@/middlewares/errHandler";
@@ -33,7 +33,7 @@ const helmetConfig: HelmetOptions = {
 };
 
 function initializeMiddleware(app: Express): void {
-  logging.log("Configuring middleware...");
+  logging.info("Configuring middleware...");
 
   app.set("trust proxy", 10);
   app.use(cors({ origin: "*", credentials: true }));
@@ -55,7 +55,7 @@ function initializeMiddleware(app: Express): void {
 }
 
 function initializeRoutes(app: Express): void {
-  logging.log("Setting up routes...");
+  logging.info("Setting up routes...");
 
   app.get("/", (_, res: Response) => {
     res.send(

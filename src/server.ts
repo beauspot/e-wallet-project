@@ -16,12 +16,12 @@ async function startServer(): Promise<void> {
     const app = createApp();
 
     app.listen(port, () => {
-      logging.log("API Initialized");
-      logging.log("----------------------------------------");
-      logging.log("Documentation with Swagger");
-      logging.log("----------------------------------------");
-      logging.log(`${applicationMessage} ${ip.address()}:${port}`);
-      logging.log("----------------------------------------");
+      logging.info("----------------------------------------");
+      logging.info("API Initialized");
+      logging.info("Documentation with Swagger");
+      logging.info("----------------------------------------");
+      logging.info(`${applicationMessage} ${ip.address()}:${port}`);
+      logging.info("----------------------------------------");
     });
   } catch (error) {
     logging.error("Database connection error: " + error);
