@@ -1,11 +1,10 @@
-import { Router } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import { User } from "@/db/user.entity";
 import { TwilioConfig } from "@/api/helpers/utils/twilio"
 import { protect } from "@/middlewares/protect";
 import { UserWallet } from "@/db/wallet.entity";
 import { UserService } from "@/services/auth.service";
 import { validate } from "@/helpers/middlewares/validate";
-import { Request, Response, NextFunction } from "express";
 import { UserController } from "@/controllers/auth.controller";
 import { ExtendRequest } from "@/interfaces/extendRequest.interface";
 
