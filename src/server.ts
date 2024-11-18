@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import ip from "ip";
 
-import "@/utils/logging";
+import logging from "@/utils/logging";
 import { createApp } from "@/app";
 import { db_init } from "@/configs/db.config";
 

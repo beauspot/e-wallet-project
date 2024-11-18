@@ -8,7 +8,7 @@ import cookieParser from "cookie-parser";
 import helmet, { HelmetOptions } from "helmet";
 import express, { Express, Response } from "express";
 
-import logging from "@/utils/logging";
+import logging from "@/helpers/utils/logging";
 
 import __404_err_page from "@/middlewares/__404_notfound";
 import errorHandlerMiddleware from "@/middlewares/errHandler";
