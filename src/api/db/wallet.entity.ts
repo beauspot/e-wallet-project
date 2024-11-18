@@ -8,7 +8,8 @@ import {
   CreateDateColumn,
   OneToOne,
   JoinColumn,
-  BaseEntity
+  BaseEntity,
+  BeforeUpdate
 } from "typeorm";
 
 import { User } from "@/db/user.entity"
@@ -28,6 +29,16 @@ export class UserWallet extends BaseEntity {
   @OneToOne(() => User, (user) => user.wallet)
   @JoinColumn()
   user: User;
+
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  async hashTransactionPin() {
+    if (this.transaction_pin) {
+      let saltRounds = 12;
+      this.transaction_pin = await bcrypt.hash(this.transaction_pin, saltRounds)
+    }
+  }
 
   @BeforeInsert()
   generateId() {
