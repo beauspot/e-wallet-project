@@ -36,7 +36,8 @@
       "@/interfaces/*": ["./src/api/helpers/interfaces/*"],
       "@/lib/*": ["./src/api/helpers/lib/*"],
       "@/middlewares/*": ["./src/api/helpers/middlewares/*"],
-      "@/utils/*": ["./src/api/helpers/utils/*"]
+      "@/utils/*": ["./src/api/helpers/utils/*"],
+      "@/__test__/*": ["./src/__tests__/*"]
     }
   },
   "ts-node": {
@@ -44,6 +45,6 @@
       "module": "commonjs"
     }
   },
-  "include": ["src/**/*.ts", "/src/api/types/**/*.d.ts"],
-  "exclude": ["node_modules", "package.json"]
+  "include": ["src/**/*.ts", "/src/api/types/**/*.d.ts", "src/__tests__/*"],
+  "exclude": ["node_modules", "package.json", "coverage"]
 }
