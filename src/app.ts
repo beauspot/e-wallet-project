@@ -14,6 +14,7 @@ import __404_err_page from "@/middlewares/__404_notfound";
 import errorHandlerMiddleware from "@/middlewares/errHandler";
 import { logging_middleware } from "@/middlewares/loggingmiddleware";
 import authRouter from "@/routes/users.routes";
+import walletRouter from "@/routes/wallet.routes";
 
 /// <reference path="./api/types/express/custom.d.ts" />
 
@@ -64,6 +65,7 @@ function initializeRoutes(app: Express): void {
   });
 
   app.use("/auth", authRouter);
+  app.use("/wallet", walletRouter);
   app.all("*", __404_err_page);
   app.use(errorHandlerMiddleware);
 }
