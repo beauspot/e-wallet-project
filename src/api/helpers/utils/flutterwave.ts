@@ -148,6 +148,7 @@ export class Flw {
         }
     };
 
+    // Virtual account creation.
     createVAN = async (payload: virtualAccountPayload) => {
         try {
             const response = await this.flutterWave.VirtualAccount.create({
