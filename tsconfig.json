@@ -37,7 +37,8 @@
       "@/lib/*": ["./src/api/helpers/lib/*"],
       "@/middlewares/*": ["./src/api/helpers/middlewares/*"],
       "@/utils/*": ["./src/api/helpers/utils/*"],
-      "@/__test__/*": ["./src/__tests__/*"]
+      "@/__test__/*": ["./src/__tests__/*"],
+      "@/integrations/*": ["./src/api/helpers/integrations/*"],
     }
   },
   "ts-node": {
