@@ -9,10 +9,10 @@ import { Response } from "express";
 import { User } from "@/db/user.entity";
 import { UserWallet } from "@/db/wallet.entity";
 
-import { Email } from "@/utils/email";
+import { Email } from "@/api/helpers/integrations/email";
 import AppError from "@/utils/appErrors";
-import { verifyBvn } from "@/utils/dojah";
-import { TwilioConfig } from "@/api/helpers/utils/twilio"
+import { verifyBvn } from "@/api/helpers/integrations/dojah";
+import { TwilioConfig } from "@/api/helpers/integrations/twilio"
 import { AppDataSource } from "@/configs/db.config";
 import { userInterface } from "@/interfaces/user.interface";
 
