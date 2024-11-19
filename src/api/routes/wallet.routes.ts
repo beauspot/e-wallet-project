@@ -1,11 +1,19 @@
+import Flutterwave from "flutterwave-node-v3";
 import { Router, Request, Response, NextFunction } from "express";
+
+import { User } from "@/db/user.entity";
 import { WalletController } from "@/controllers/wallet.controller";
 import { UserWallet } from "@/db/wallet.entity";
 import { protect } from "@/middlewares/protect";
 import { WalletService } from "@/services/wallet.service";
 import { validate } from "@/helpers/middlewares/validate";
+import { Flw } from "@/api/helpers/integrations/flutterwave";
+import { UserTransactionModel } from "@/db/transactions.entity";
 
-const walletService = new WalletService(UserWallet);
+
+const FLW = new Flw(typeof Flutterwave, process.env.FLUTTERWAVE_PUBLIC_KEY!, process.env.FLUTTERWAVE_SECRET_KEY!, UserTransactionModel);
+
+const walletService = new WalletService(UserWallet, FLW, UserTransactionModel, User);
 const walletController = new WalletController(walletService);
 
 const router = Router();
@@ -18,5 +26,10 @@ router.route("/balance").get((req: Request, res: Response, next: NextFunction) =
 // TODO: implement a validation schema on this field
 router.route("/change-pin").get((req:Request, res:Response, next:NextFunction) => walletController.changePin(req, res, next));
 
+router.route("/deposit").post((req: Request, res: Response, next: NextFunction) => walletController.deposit(req, res, next));
+
+router.route("/deposit/authorize").post((req: Request, res: Response, next: NextFunction) => walletController.authorize(req, res, next));
+
+router.route("/transfer").post((req: Request, res: Response, next: NextFunction) => walletController.transfer(req, res, next));
 
 export default router;
