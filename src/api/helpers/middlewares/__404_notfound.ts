@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from "express";
+import logging from "@/utils/logging";
 
 const routeNotFound = (req: Request, res: Response, next: NextFunction) => {
   const error = new Error("Not found");
-  logging.warning(error);
+  logging.warn(error);
 
   return res.status(404).json({
     error: {
