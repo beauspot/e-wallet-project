@@ -45,6 +45,7 @@
     "otp-generator": "^4.0.1",
     "pg": "^8.13.1",
     "pino": "^9.3.2",
+    "pino-pretty": "^13.0.0",
     "redis": "^4.7.0",
     "reflect-metadata": "^0.2.2",
     "streamifier": "^0.1.1",
