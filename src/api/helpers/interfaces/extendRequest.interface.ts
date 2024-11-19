@@ -4,6 +4,7 @@ import { Request } from "express";
 import { User } from "@/db/user.entity";
 export interface ExtendRequest extends Request {
     user?: {
-        id?: string
+        id?: string;
+        email?: string;
     }
-}
+};
