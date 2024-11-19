@@ -2,9 +2,10 @@ import "reflect-metadata";
 import cors from "cors";
 import path from "path";
 import YAML from "yamljs";
-import rateLimit from "express-rate-limit";
-import swaggerUi from "swagger-ui-express";
+import session from "express-session";
 import cookieParser from "cookie-parser";
+import swaggerUi from "swagger-ui-express";
+import rateLimit from "express-rate-limit";
 import helmet, { HelmetOptions } from "helmet";
 import express, { Express, Response } from "express";
 
@@ -17,6 +18,8 @@ import authRouter from "@/routes/users.routes";
 import walletRouter from "@/routes/wallet.routes";
 
 /// <reference path="./api/types/express/custom.d.ts" />
+
+// TODO: validate all endoints using zod and zod only.
 
 // Configuration
 const limiter = rateLimit({
@@ -49,6 +52,13 @@ function initializeMiddleware(app: Express): void {
   app.use(helmet.permittedCrossDomainPolicies());
   app.use(cookieParser());
   app.use(limiter);
+  app.use(
+    session({
+      secret: process.env.SESSION_SECRET!,
+      resave: false,
+      saveUninitialized: true,
+    })
+  );
 
   if (process.env.NODE_ENV === "development") {
     app.use(logging_middleware);
