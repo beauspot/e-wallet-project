@@ -10,6 +10,7 @@ interface CardChargePayload {
     phone_number?: string;
     fullname?: string;
     pin?: string;
+    enckey?: string;
 };
 
 interface AuthorizeCardPaymentPayload {
@@ -22,7 +23,7 @@ interface TransferPayload {
     account_no: string;
     amount: number;
     recipient: string;
-    bank?: string;
+    bank: string;
     currency: string;
     receipientBankCode?: string;
     reference?: string;
@@ -30,6 +31,7 @@ interface TransferPayload {
     senderId?: string;
     transferType: "Wallet" | "3rd-Party" 
     callback_url?: string;
+    transactionPin: string;
 };
 
 interface SubAccounts {
@@ -57,10 +59,16 @@ interface virtualAccountPayload {
 }
 
 
+interface AccountInfoPayload {
+    account_number: string;
+    account_bank: string;
+}
+
 export {
     CardChargePayload,
     AuthorizeCardPaymentPayload,
     TransferPayload,
     SubAccounts,
-    virtualAccountPayload
+    virtualAccountPayload,
+    AccountInfoPayload,
 };
