@@ -40,6 +40,12 @@ router.route("/reset_password").patch((req: Request, res: Response, next: NextFu
 // Protecting all routes after this middleware
 router.use(protect);
 
+router.route("/forgot-pin").post((req: Request, res: Response, next: NextFunction) => user_controller.forgotTransactionPin(req, res));
+
+router.route("/reset-pin").post((req: Request, res: Response, next: NextFunction) => user_controller.resetTransactionPin(req, res));
+
+router.route("/update-pin").patch((req: Request, res: Response) => user_controller.updateTransactionPin(req, res));
+
 // update pwd => PATCH
 router.route("/update_password").patch((req: Request, res: Response, next: NextFunction) => {
     user_controller
