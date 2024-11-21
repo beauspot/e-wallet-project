@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { User } from "@/db/user.entity";
 import AppError from "@/utils/appErrors";
 import { UserWallet } from "@/db/wallet.entity";
+import { WalletServiceInterface, SessionData } from "@/interfaces/wallet.interface";
 import { AppDataSource } from "@/configs/db.config";
 import { generateReference } from "@/utils/generateRef";
 import { TransactionType, TransactionStatus, PaymentType } from "@/enum/transactions.enum"
@@ -12,10 +13,10 @@ import { UserTransactionModel } from "@/db/transactions.entity";
 import { CardChargePayload, TransferPayload, AuthorizeCardPaymentPayload } from "@/interfaces/flutterwave.interface";
 
 @Service()
-export class WalletService {
+export class WalletService implements WalletServiceInterface {
     constructor(private wallet: typeof UserWallet, private flw: Flw, private transaction: typeof UserTransactionModel, private user: typeof User) { }
 
-    async getWallet(userId: string) {
+    async getWallet(userId: string): Promise<UserWallet> {
         try {
             const walletRepository = AppDataSource.getRepository(this.wallet);
             const wallet = await walletRepository.findOne({
@@ -30,7 +31,7 @@ export class WalletService {
         }
     };
 
-    async getBalance(userId: string) {
+    async getBalance(userId: string): Promise<number> {
         try {
             const walletRepository = AppDataSource.getRepository(this.wallet)
             const wallet = await walletRepository.findOne({
@@ -49,7 +50,7 @@ export class WalletService {
         }
     }
 
-    async changePin(userId: string, oldPin: string, newPin: string) {
+    async changePin(userId: string, oldPin: string, newPin: string):Promise<UserWallet> {
         try {
             const walletRepository = AppDataSource.getRepository(this.wallet);
             const wallet = await walletRepository.findOne({
@@ -74,7 +75,7 @@ export class WalletService {
         }
     }
 
-    async deposit(payload: CardChargePayload, userEmail: string) {
+    async deposit(payload: CardChargePayload, userEmail: string):Promise<UserTransactionModel> {
         try {
             payload.email = payload.email || userEmail;
             payload.tx_ref = generateReference("transaction");
@@ -88,7 +89,7 @@ export class WalletService {
 
     }
 
-    async authorize(payload: AuthorizeCardPaymentPayload, sessionData: any) {
+    async authorize(payload: AuthorizeCardPaymentPayload, sessionData: SessionData):Promise<SessionData> {
         try {
             payload.flw_ref = sessionData?.reCallCharge?.data?.flw_ref || payload.flw_ref;
             const response = await this.flw.authorizeCardPayment(payload);
@@ -98,7 +99,7 @@ export class WalletService {
         }
     }
 
-    async transfer(payload: TransferPayload, userId: string) {
+    async transfer(payload: TransferPayload, userId: string): Promise<UserTransactionModel> {
         try {
             const walletRepository = AppDataSource.getRepository(this.wallet);
             const wallet = await walletRepository.findOne({
@@ -129,7 +130,7 @@ export class WalletService {
 
             const response = await this.flw.transfer(transferPayload);
 
-            const userRepository = AppDataSource.getRepository(User);
+            const userRepository = AppDataSource.getRepository(this.user);
             const user = await userRepository.findOne({ where: { id: userId } });
 
             if (!user)
