@@ -1,11 +1,13 @@
 import { Service } from "typedi";
-import { UserTransactionModel } from "@/db/transactions.entity";
 import AppError from "@/utils/appErrors";
+import { UserTransactionModel } from "@/db/transactions.entity";
+import { TransactionServiceInterface } from "@/interfaces/transaction.interface";
+import { TransactionStatus } from "@/enum/transactions.enum";
 
 @Service()
-export class TransactionService {
+export class TransactionService implements TransactionServiceInterface {
     constructor(private transaction: typeof UserTransactionModel) { }
-    async getTransaction(reference: string) {
+    async getTransaction(reference: string): Promise<UserTransactionModel> {
         try {
             const transaction = await this.transaction.findOne({
                 where: { reference },
@@ -20,7 +22,7 @@ export class TransactionService {
         }
     }
 
-    async getTransactions(userId: string) {
+    async getTransactions(userId: string): Promise<UserTransactionModel[]> {
         try {
             const transactions = await this.transaction.find({
                 where: { user: {id: userId}},
@@ -34,24 +36,28 @@ export class TransactionService {
         }
     }
 
-    async verifyTransactionStatus(data: any) {
+    async verifyTransactionStatus(data: Partial<UserTransactionModel>): Promise<UserTransactionModel | null> {
         try {
-            const { status, reference } = data.data.data;
-            const query = { reference };
-            let updateQuery = {};
+            const { status, reference } = data;
     
             const transaction = await this.transaction.findOne({
-                where : {reference},
+                where : { reference },
             });
-    
-            if (transaction) {
-                if (status === "SUCCESSFUL") {
-                    updateQuery = { status: "successful" };
-                } else if (status === "FAILED") {
-                    updateQuery = { status: "failed" };
-                }
-                await this.transaction.save(transaction);
+
+            if (!transaction) {
+                return null; 
             }
+    
+        
+            if (status === TransactionStatus.Successful) {
+                transaction.status = TransactionStatus.Successful;
+            } else if (status === TransactionStatus.Failed) {
+                transaction.status = TransactionStatus.Failed;
+            } else {
+                throw new AppError(`Invalid transaction status: ${status}`, "failed", false);
+            }
+                await this.transaction.save(transaction);
+      
             return transaction;
         } catch (error: any) {
             throw new AppError(`${error.message}`, "failed", false);
