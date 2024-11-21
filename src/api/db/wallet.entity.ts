@@ -40,6 +40,15 @@ export class UserWallet extends BaseEntity {
     }
   }
 
+  @Column({ nullable: true })
+  transactionPinResetToken: string;
+
+  @Column({ nullable: true, type: "timestamp" })
+  transactionPinTokenExpires: Date;
+
+  @Column({ default: 0 })
+  transactionResetAttempts: number;
+
   @BeforeInsert()
   generateId() {
     this.id = `walletID-${uuidv4()}`;
