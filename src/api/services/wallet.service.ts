@@ -1,5 +1,6 @@
 import { Service } from "typedi";
 import bcrypt from "bcryptjs";
+import { Session } from "express-session";
 
 import { User } from "@/db/user.entity";
 import AppError from "@/utils/appErrors";
@@ -89,7 +90,7 @@ export class WalletService implements WalletServiceInterface {
 
     }
 
-    async authorize(payload: AuthorizeCardPaymentPayload, sessionData: SessionData):Promise<SessionData> {
+    async authorize(payload: AuthorizeCardPaymentPayload, sessionData: Session & SessionData):Promise<SessionData> {
         try {
             payload.flw_ref = sessionData?.reCallCharge?.data?.flw_ref || payload.flw_ref;
             const response = await this.flw.authorizeCardPayment(payload);
