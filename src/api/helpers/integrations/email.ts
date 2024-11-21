@@ -49,4 +49,10 @@ export class Email {
             `<p>Forgot your password? Your One-Time Password to reset your password is <strong>${this.resetToken}</strong>. It is valid for only 10 minutes.</p>`
         );
     }
+    async sendPinReset() {
+        await this.send(
+            "Pin Reset OTP",
+            `<p>Forgot your transaction pin? Your One-Time Password to reset your transaction pin is <strong>${this.resetToken}</strong>. It is valid for only 10 minutes.</p>`
+        );
+    }
 };
