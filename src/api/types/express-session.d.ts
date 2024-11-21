@@ -16,7 +16,7 @@ declare module "express-session" {
 declare global {
     namespace Express {
         interface Request {
-            session: Session & Partial<SessionData>; // Define the session property with the correct type
+            session: Session & SessionData; // Define the session property with the correct
         }
     }
 }
