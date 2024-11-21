@@ -1,8 +1,4 @@
-
-import { User } from "@/db/user.entity";
 import { UserWallet } from "@/db/wallet.entity";
-import { TransactionType, TransactionStatus, PaymentType } from "@/enum/transactions.enum"
-import { Flw } from "@/api/helpers/integrations/flutterwave";
 import { UserTransactionModel } from "@/db/transactions.entity";
 import { CardChargePayload, TransferPayload, AuthorizeCardPaymentPayload } from "@/interfaces/flutterwave.interface";
 
