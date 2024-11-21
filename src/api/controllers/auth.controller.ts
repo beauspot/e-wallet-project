@@ -1,3 +1,4 @@
+import { Service } from "typedi";
 import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
 
@@ -7,6 +8,7 @@ import { plainToInstance } from "class-transformer";
 import { UserService } from "@/services/auth.service";
 import { ExtendRequest } from "@/interfaces/extendRequest.interface";
 
+@Service()
 export class UserController {
     constructor(private userService: UserService) { }
 
