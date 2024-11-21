@@ -56,17 +56,37 @@ export class UserController {
         } catch (error: any) {
             throw new AppError(`${error.message}`, "failed", false, StatusCodes.SERVICE_UNAVAILABLE)
         }
+    };
+
+    async forgotTransactionPin(req: Request, res: Response) {
+        const { email } = req.body;
+        try {
+            const result = await this.userService.forgotTransactionPin(email);
+            return res.json({ message: "Reset OTP sent", resetToken: result });
+        } catch (error: any) {
+            return res.status(400).json({ error: error.message });
+        }
     }
 
     async resetPassword(req: Request, res: Response, next: NextFunction) {
         try {
             const { email, otp, newPassword, passwordConfirm } = req.body;
-            const token = await this.userService.resetPassword(email, otp, newPassword, passwordConfirm);
+            const token = await this.userService.resetPassword(email, otp, newPassword);
             res.status(StatusCodes.OK).json({ message: "Password reset successful", token });
         } catch (error: any) {
             throw new AppError(`${error.message}`, "failed", false, StatusCodes.SERVICE_UNAVAILABLE)
         }
-    }
+    };
+
+    async resetTransactionPin(req: Request, res: Response) {
+        const { email, otp, newPin } = req.body;
+        try {
+            const result = await this.userService.resetTransactionPin(email, otp, newPin);
+            return res.json({ message: "Transaction pin reset successfully", token: result });
+        } catch (error: any) {
+            return res.status(400).json({ error: error.message });
+        }
+    };
 
     async updatePassword(req: ExtendRequest, res: Response, next: NextFunction) {
         try {
@@ -79,7 +99,17 @@ export class UserController {
         } catch (error: any) {
             throw new AppError(`${error.message}`, "failed", false, StatusCodes.SERVICE_UNAVAILABLE)
         }
-    }
+    };
+
+    async updateTransactionPin(req: Request, res: Response) {
+        const { userId, currentPin, newPin } = req.body;
+        try {
+            const result = await this.userService.updateTransactionPin(userId, currentPin, newPin);
+            return res.json({ message: "Transaction pin updated successfully", token: result });
+        } catch (error: any) {
+            return res.status(400).json({ error: error.message });
+        }
+    };
 
     async verifyBvnData(req: Request, res: Response, next: NextFunction) {
         try {
@@ -89,11 +119,11 @@ export class UserController {
         } catch (error: any) {
             throw new AppError(`${error.message}`, "failed", false, StatusCodes.SERVICE_UNAVAILABLE)
         }
-    }
+    };
 
     async logoutUser(req: Request, res: Response) {
         // Call the logout service to clear the jwt cookie 
         await this.userService.logout(res);
         res.status(StatusCodes.OK).json({ status: `${res.locals.user}, successful` });
-    }
+    };
 }
