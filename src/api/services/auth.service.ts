@@ -12,16 +12,18 @@ import { UserWallet } from "@/db/wallet.entity";
 import { Email } from "@/api/helpers/integrations/email";
 import AppError from "@/utils/appErrors";
 import { verifyBvn } from "@/api/helpers/integrations/dojah";
-import { TwilioConfig } from "@/api/helpers/integrations/twilio"
+import { TwilioConfig } from "@/api/helpers/integrations/twilio";
 import { AppDataSource } from "@/configs/db.config";
-import { userInterface } from "@/interfaces/user.interface";
+import { userInterface, UserSercviceInterface } from "@/interfaces/user.interface";
+import { VerificationInstance } from "twilio/lib/rest/verify/v2/service/verification";
+
 
 @Service()
-export class UserService {
+export class UserService implements UserSercviceInterface {
     
     constructor(private userEntity: typeof User, private userwalletEntity: typeof UserWallet, public twilio: TwilioConfig) { }
 
-    async SendOtp(phoneNumber: string) {
+    async SendOtp(phoneNumber: string): Promise<VerificationInstance> {
         const otp = await this.twilio.sendOtp(phoneNumber);
         return otp;
     }
@@ -37,7 +39,13 @@ export class UserService {
         });
     };
 
-    private createPasswordResetToken(user: User) {
+    private createPasswordResetToken(user: Partial<User>) {
+        const resetToken = crypto.randomBytes(32).toString("hex");
+        user.passwordResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+        user.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 min expiration
+        return resetToken;
+    }
+    private createPinResetToken(user: Partial<User>) {
         const resetToken = crypto.randomBytes(32).toString("hex");
         user.passwordResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
         user.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 min expiration
@@ -66,6 +74,7 @@ export class UserService {
 
     // TODO: this belongs to the controller => Remember!!!
     async createSendToken(user: User, res: Response) {
+
         const token = this.signToken(user.id);
 
         res.cookie("jwt", token, {
@@ -145,7 +154,27 @@ export class UserService {
         }
     }
 
-    async resetPassword(email: string, otp: string, newPassword: string, passwordConfirm: string) {
+    async forgotTransactionPin(email: string) {
+        try {
+            const user = await AppDataSource.getRepository(User)
+                .createQueryBuilder("user")
+                .leftJoinAndSelect("user.wallet", "wallet")
+                .where("user.email = :email", { email })
+                .getOne();
+
+            if (!user) throw new Error("There is no user with that email address.");
+
+            const pinResetToken = this.createPinResetToken(user.wallet);
+            await AppDataSource.getRepository(this.userEntity).save(user.wallet);
+
+            await new Email(user, pinResetToken).sendPinReset();
+            return pinResetToken;
+        } catch (error: any) {
+            throw new AppError("Error", `${error.message}`, false);
+        }
+    }
+
+    async resetPassword(email: string, otp: string, newPassword: string) {
         const hashedToken = crypto.createHash("sha256").update(otp).digest("hex");
         try {
             const user = await AppDataSource.getRepository(this.userEntity).findOne({ where: { email } });
@@ -164,7 +193,31 @@ export class UserService {
         } catch (error: any) {
             throw new AppError("Error", `${error.message}`, false);
         }
-     
+    }
+
+    async resetTransactionPin(email: string, otp: string, newPassword: string) {
+        const hashedToken = crypto.createHash("sha256").update(otp).digest("hex");
+        try {
+            const user = await AppDataSource.getRepository(this.userEntity)
+                .createQueryBuilder("user")
+                .leftJoinAndSelect("user.wallet", "wallet")
+                .where("user.email = :email", { email })
+                .getOne();
+
+            if (!user || user.wallet.transactionPinResetToken !== hashedToken || user.wallet.transactionPinTokenExpires! < new Date()) {
+                throw new Error("Invalid OTP or OTP has expired.");
+            }
+
+            user.wallet.transaction_pin = await bcrypt.hash(newPassword, 12);
+            user.wallet.transactionPinResetToken = "";
+            user.wallet.transactionPinTokenExpires = new Date() || undefined;
+
+            await AppDataSource.getRepository(this.userwalletEntity).save(user.wallet);
+
+            return this.signToken(user.id);
+        } catch (error: any) {
+            throw new AppError("Error", `${error.message}`, false);
+        }
     }
 
     async updatePassword(userId: string, currentPassword: string, newPassword: string) {
@@ -182,6 +235,33 @@ export class UserService {
             user.password = await bcrypt.hash(newPassword, 12);
 
             await AppDataSource.getRepository(this.userEntity).save(user);
+
+            return this.signToken(user.id);
+        } catch (error: any) {
+            throw new AppError("Error", `${error.message}`, false);
+        }
+    }
+
+    async updateTransactionPin(userId: string, currentPin: string, newPin: string) {
+        try {
+            const user = await AppDataSource.getRepository(this.userEntity).createQueryBuilder("user")
+                .leftJoinAndSelect("user.wallet", "wallet")
+                .where("user.id = :id", { id: userId })
+                .select(["wallet.transaction_pin"])
+                .getOne();
+
+            if (!user || !(await this.verifyPassword(currentPin, user.wallet.transaction_pin))) {
+                throw new AppError("User not found or wallet not associated.");
+            }
+
+            const isValidPin = await bcrypt.compare(currentPin, user.wallet.transaction_pin);
+            if (!isValidPin) {
+                throw new AppError("Your current transaction pin is incorrect.");
+            };
+
+            user.wallet.transaction_pin = await bcrypt.hash(newPin, 12);
+
+            await AppDataSource.getRepository(UserWallet).save(user.wallet);
 
             return this.signToken(user.id);
         } catch (error: any) {
