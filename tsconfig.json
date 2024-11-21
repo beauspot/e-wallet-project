@@ -40,6 +40,7 @@
       "@/utils/*": ["./src/api/helpers/utils/*"],
       "@/__test__/*": ["./src/__tests__/*"],
       "@/integrations/*": ["./src/api/helpers/integrations/*"],
+      "@/types/*": ["./src/api/types/*"]
     }
   },
   "ts-node": {
