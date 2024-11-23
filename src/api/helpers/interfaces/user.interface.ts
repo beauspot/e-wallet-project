@@ -27,7 +27,7 @@ interface DecodedToken {
 
 interface UserSercviceInterface {
   SendOtp(phoneNumber: string): Promise<VerificationInstance>;
-  VerifyOtp(phoneNumber: string, otp: string): Promise<string>;
+  VerifyOtp(phoneNumber: string, otp: string): Promise<String>;
   signToken(userId: string): string;
   createSendToken(user: Partial<User>, res: Response): Promise<{ user: User, token: string }>
   registerUser(userData: Partial<userInterface>, pin: string): Promise<{ user: User, wallet: UserWallet }>;
