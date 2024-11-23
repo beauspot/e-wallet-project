@@ -3,13 +3,14 @@ import logging from "@/utils/logging";
 import { User } from "@/db/user.entity";
 import AppError from "@/utils/appErrors";
 import { AppDataSource } from "@/configs/db.config";
+import { TwilioClassConfig } from "@/interfaces/twilioConfig.interface";
 import { VerificationInstance } from "twilio/lib/rest/verify/v2/service/verification";
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID!;
 const authToken = process.env.TWILIO_AUTH_TOKEN!;
 const serviceSid = process.env.TWILIO_SERVICE_SID!;
 
-export class TwilioConfig {
+export class TwilioConfig implements TwilioClassConfig {
     constructor(public phoneNumber: string, protected otp: string) { }
 
     async sendOtp(phoneNumber: string):Promise<VerificationInstance> {
@@ -46,7 +47,7 @@ export class TwilioConfig {
         }
 };
 
-    async verifyOtp(phoneNumber: string, otp: string) {
+    async verifyOtp(phoneNumber: string, otp: string): Promise<String> {
         const client = twilio(accountSid, authToken);
 
         try {
