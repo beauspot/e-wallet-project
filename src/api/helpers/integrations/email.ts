@@ -1,11 +1,12 @@
 import * as nodemailer from "nodemailer";
+import { EmailClassConfiguration } from "@/interfaces/email.interface";
 
 interface User {
     email: string;
     firstName: string;
 }
 
-export class Email {
+export class Email implements EmailClassConfiguration {
     private to: string;
     private firstName: string;
     private resetToken: string;
@@ -39,17 +40,17 @@ export class Email {
         await this.newTransport().sendMail(mailOptions);
     }
 
-    async sendWelcome() {
+    async sendWelcome(): Promise<void> {
         await this.send("Welcome", `<h1>Welcome to E-walletPay, ${this.firstName}!</h1>`);
     }
 
-    async sendPasswordReset() {
+    async sendPasswordReset():Promise<void>  {
         await this.send(
             "Password Reset OTP",
             `<p>Forgot your password? Your One-Time Password to reset your password is <strong>${this.resetToken}</strong>. It is valid for only 10 minutes.</p>`
         );
     }
-    async sendPinReset() {
+    async sendPinReset(): Promise<void> {
         await this.send(
             "Pin Reset OTP",
             `<p>Forgot your transaction pin? Your One-Time Password to reset your transaction pin is <strong>${this.resetToken}</strong>. It is valid for only 10 minutes.</p>`
