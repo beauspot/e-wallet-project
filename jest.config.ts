@@ -9,15 +9,13 @@ const config: JestConfigWithTsJest = {
   forceExit: true,
   collectCoverage: true,
   verbose: true,
-  roots: ["<rootDir>"],
+  roots: ["<rootDir>/"],
   modulePaths: [compilerOptions.baseUrl],
   collectCoverageFrom: ["<rootDir>/src/api/**/*.ts"],
-  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
-    prefix: "<rootDir>/",
-  }),
+  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: "<rootDir>/" }),
   testMatch: ["**/**/*.test.ts", "**/**/*.spec.ts"],
   transform: {
-    "^.+.tsx?$": ["ts-jest", {}],
+    "^.+\\.tsx?$": ["ts-jest", {}],
   },
 };
 
