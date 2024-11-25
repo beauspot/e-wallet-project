@@ -1,33 +1,21 @@
-import supertest from "supertest"
-import { DataSource } from 'typeorm';
+import { expect, test, describe } from 'vitest';
+import supertest from 'supertest';
 
-import { createApp } from "@/app";
+// Assuming createApp is the function that returns your Express app
+import { createApp } from '@/app';
 
-import { User } from "@/db/user.entity";
-import { UserWallet } from "@/db/wallet.entity";
-import { SettlementAcct } from "@/db/settlementAccts.entity";
-import { UserTransactionModel } from "@/db/transactions.entity";
-
-export const TestDataSource = new DataSource({
-    type: 'sqlite',
-    database: ':memory:',
-    synchronize: true,
-    logging: false,
-    entities: [
-        User,
-        UserWallet,
-        SettlementAcct,
-        UserTransactionModel,
-    ],
-});
-
+// Create an app instance for testing
 const app = createApp();
 
-describe("index route", () => {
-    it("should return the contents of the index endpoint", async () => {
-        const { text, statusCode } = await supertest(app).get("/");
+describe('index route', () => {
+    test('should return the contents of the index endpoint', async () => {
+        // Make a GET request to the root endpoint
+        const { body, statusCode } = await supertest(app).get('/');
 
+        // Check that the status code is 200 (OK)
         expect(statusCode).toBe(200);
-        expect(text).toBe('<h1>E-Wallet API Documentation</h1><a href="/api-docs">Documentation</a>');
+
+        // Verify that the body content matches the expected HTML
+        expect(body).toBe('<h1>E-Wallet API Documentation</h1><a href="/api-docs">Documentation</a>');
     });
 });
