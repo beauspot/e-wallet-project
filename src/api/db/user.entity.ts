@@ -22,91 +22,82 @@ export class User {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @Column({ nullable: false })
+  @Column({ type: "varchar", nullable: false })
   firstName: string;
 
-  @Column({ nullable: true })
+  @Column({ type: "varchar", nullable: true })
   middleName: string;
 
-  @Column({ nullable: false })
+  @Column({ type: "varchar", nullable: false })
   lastName: string;
 
-  @Column({ nullable: false, unique: true })
+  @Column({ type: "varchar", unique: true, nullable: false })
   phoneNumber: string;
 
-  @Column({ unique: true, nullable: false })
+  @Column({ type: "varchar", unique: true, nullable: false })
   email: string;
 
-  @Column({ nullable: false })
+  @Column({ type: "date", nullable: false })
   dob: Date;
 
-  @Column({ nullable: false })
+  @Column({ type: "varchar", nullable: false })
   password: string;
 
-  @Column({ unique: true, length: 11, nullable: false })
+  @Column({ type: "varchar", unique: true, length: 11, nullable: false })
   nin: string;
 
-  @Column({ unique: true, length: 11, nullable: false })
+  @Column({ type: "varchar", unique: true, length: 11, nullable: false })
   bvn: string;
 
-  @Column({
-    type: "enum",
-    enum: gender_enum,
-    nullable: false,
-  })
+  @Column({ type: "enum", enum: gender_enum, nullable: false })
   gender: gender_enum;
 
-  @Column({
-    type: "enum",
-    enum: userRole,
-    default: userRole.Customer,
-    nullable: false,
-  })
+  @Column({ type: "enum", enum: userRole, default: userRole.Customer, nullable: false })
   role: userRole;
 
-  @Column({ unique: true })
+  @Column({ type: "varchar", unique: true })
   account_no: string;
 
-  @Column({ nullable: true })
+  @Column({ type: "varchar", nullable: true })
   businessName: string;
 
-  @Column({ nullable: true })
+  @Column({ type: "varchar", nullable: true })
   accountName: string;
 
-  @Column({ nullable: true })
+  @Column({ type: "varchar", nullable: true })
   GovernmentIDImage: string;
 
-  @Column({ nullable: true, default: "default.jpg" })
+  @Column({ type: "varchar", nullable: true, default: "default.jpg" })
   photo: string;
 
-  @Column({ nullable: true })
+  @Column({ type: "varchar", nullable: true })
   state: string;
 
-  @Column({ nullable: true })
+  @Column({ type: "varchar", nullable: true })
   lga: string;
 
-  @Column({ nullable: true })
+  @Column({ type: "text", nullable: true })
   address: string;
 
-  @Column({ nullable: true })
+  @Column({ type: "text", nullable: true })
   description: string;
 
-  @Column({ default: true, select: false })
+  @Column({ type: "boolean", default: true, select: false })
   active: boolean;
 
-  @Column({ nullable: true })
+  @Column({ type: "timestamp", nullable: true })
   passwordChangedAt: Date;
 
-  @Column({ nullable: true })
+  @Column({ type: "varchar", nullable: true })
   passwordResetToken: string;
 
-  @Column({ nullable: true, type: "timestamp" })
+  @Column({ type: "timestamp", nullable: true })
   passwordResetExpires: Date;
 
-  @Column({ default: 0 })
+  @Column({ type: "int", default: 0 })
   passwordResetAttempts: number;
 
-  @Column({ nullable: true, default: false })
+  @Column({ type: "boolean", nullable: true, default: false })
   acceptTerms: boolean;
 
   @OneToOne(() => SettlementAcct, (settlementAcct) => settlementAcct.userAcct, {

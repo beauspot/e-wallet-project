@@ -15,13 +15,13 @@ export class SettlementAcct {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
-    @Column({ nullable: false })
+    @Column({ type: "string", nullable: false })
     accountNumber: number;
 
-    @Column({ nullable: false })
+    @Column({ type: "string", nullable: false })
     accountName: string;
 
-    @Column({ nullable: false, default: false })
+    @Column({ type: "boolean", nullable: false, default: false })
     default: boolean;
 
     @OneToOne(() => User, (user) => user.settlementAcct)
