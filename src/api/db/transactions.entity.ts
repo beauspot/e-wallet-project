@@ -12,7 +12,6 @@ import {
     ManyToOne,
     JoinColumn
 } from "typeorm";
-
 import logging from "@/utils/logging";
 import { User } from "@/db/user.entity";
 import { UserWallet } from "@/db/wallet.entity";
@@ -59,11 +58,8 @@ export class UserTransactionModel extends BaseEntity {
     trimFields() {
         if (this.reference) this.reference = this.reference.trim();
         if (this.gatewayReference) this.gatewayReference = this.gatewayReference.trim();
-    };
+    }
 
-    /* 
-    Calculating the total balance for users after each successful transaction
-    */
     static async sumBalance(userId: string) {
         const result = await this.createQueryBuilder("transaction")
             .select("SUM(transaction.amount)", "transactionSum")
@@ -81,7 +77,7 @@ export class UserTransactionModel extends BaseEntity {
         } catch (error: any) {
             logging.error(error.message)
         }
-    };
+    }
 
     @AfterInsert()
     @AfterUpdate()
@@ -92,7 +88,7 @@ export class UserTransactionModel extends BaseEntity {
     @BeforeInsert()
     generateId() {
         this.id = `TransactionID-${uuidv4()}`;
-    };
+    }
 
     @CreateDateColumn()
     createdAt: Date;

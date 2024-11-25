@@ -8,7 +8,6 @@ import {
     JoinColumn,
     OneToOne
 } from "typeorm";
-
 import { User } from "@/db/user.entity";
 
 @Entity()
