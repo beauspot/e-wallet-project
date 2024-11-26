@@ -1,4 +1,3 @@
-import { expect, test, describe } from 'vitest';
 import supertest from 'supertest';
 
 // Assuming createApp is the function that returns your Express app

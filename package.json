@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start:dev": "NODE_ENV=development ts-node-dev --respawn -r tsconfig-paths/register src/server.ts",
-    "start:test": "jest"
+    "start:test": "jest",
+    "test": "jest"
   },
   "repository": {
     "type": "git",

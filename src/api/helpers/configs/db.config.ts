@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import { DataSource } from "typeorm";
-import logging from "@/utils/logging";
 
+import logging from "@/utils/logging";
 import { User } from "@/db/user.entity";
 import { UserWallet } from "@/db/wallet.entity";
 import { SettlementAcct } from "@/db/settlementAccts.entity";
@@ -31,7 +31,7 @@ export const db_init = async () => {
     await AppDataSource.initialize();
     logging.info("Database connection established successfully.");
   } catch (error: any) {
-    logging.error("Database initialization error:", error);
+    logging.error("Database initialization error:", error.message);
     logging.error(`Failed to initialize Postgres database`);
   }
 };
