@@ -22,10 +22,10 @@ export class UserTransactionModel extends BaseEntity {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
-    @Column({ type: "string", nullable: false })
+    @Column({ type: "varchar", nullable: false })
     reference: string;
 
-    @Column({ type: "string", nullable: false })
+    @Column({ type: "varchar", nullable: false })
     gatewayReference: string;
 
     @Column({ nullable: false, type: "enum", enum: TransactionType, default: TransactionType.Debit })
@@ -34,10 +34,10 @@ export class UserTransactionModel extends BaseEntity {
     @Column("decimal", { precision: 10, scale: 2, default: 0 })
     amount: number;
 
-    @Column({ type: "string", default: "₦" })
+    @Column({ type: "varchar", default: "₦" })
     currency: string;
 
-    @Column({ type: "string", nullable: true })
+    @Column({ type: "varchar", nullable: true })
     recipient: string;
 
     @Column({ nullable: false, type: "enum", enum: TransactionStatus, default: TransactionStatus.Pending })
@@ -46,7 +46,7 @@ export class UserTransactionModel extends BaseEntity {
     @Column({ nullable: false, type: "enum", enum: PaymentType })
     paymentType: PaymentType;
 
-    @Column({ type: "string", nullable: true })
+    @Column({ type: "varchar", nullable: true })
     description: string;
 
     @ManyToOne(() => User, (user) => user.transactions, { eager: true })

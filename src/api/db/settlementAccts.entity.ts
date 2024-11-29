@@ -6,7 +6,7 @@ import {
     CreateDateColumn,
     BeforeInsert,
     JoinColumn,
-    OneToOne
+    OneToOne,
 } from "typeorm";
 import { User } from "@/db/user.entity";
 
@@ -15,10 +15,10 @@ export class SettlementAcct {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
-    @Column({ type: "string", nullable: false })
-    accountNumber: number;
+    @Column({ type: "varchar", length: 10, nullable: false }) // Keep varchar for PostgreSQL
+    accountNumber: string; // Change type to string to match varchar
 
-    @Column({ type: "string", nullable: false })
+    @Column({ type: "varchar", nullable: false })
     accountName: string;
 
     @Column({ type: "boolean", nullable: false, default: false })
