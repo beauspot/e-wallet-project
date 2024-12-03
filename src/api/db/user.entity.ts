@@ -38,7 +38,7 @@ export class User {
   email: string;
 
   @Column({ type: "date", nullable: false })
-  dob: Date;
+  date_of_birth: Date;
 
   @Column({ type: "varchar", nullable: false })
   password: string;
@@ -55,7 +55,7 @@ export class User {
   @Column({ type: "enum", enum: userRole, default: userRole.Customer, nullable: false })
   role: userRole;
 
-  @Column({ type: "varchar", unique: true })
+  @Column({ type: "varchar", unique: true, nullable: true })
   account_no: string;
 
   @Column({ type: "varchar", nullable: true })
@@ -82,7 +82,7 @@ export class User {
   @Column({ type: "text", nullable: true })
   description: string;
 
-  @Column({ type: "boolean", default: true, select: false })
+  @Column({ type: "boolean", default: true, select: false, nullable: true })
   active: boolean;
 
   @Column({ type: "timestamp", nullable: true })
