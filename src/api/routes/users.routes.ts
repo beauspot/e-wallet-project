@@ -16,13 +16,13 @@ const user_controller = new UserController(user_service);
 const router = Router();
 
 // Send OTP => POST
-router.route("/send_otp").post((req: Request, res: Response, next: NextFunction) => user_controller.sendOtp(req, res, next));
+// router.route("/send_otp").post((req: Request, res: Response, next: NextFunction) => user_controller.sendOtp(req, res, next));
 
 // Verify OTP => POST
-router.route("/verify_otp").post((req: Request, res: Response, next: NextFunction) => user_controller.verifyOtp(req, res, next));
+// router.route("/verify_otp").post((req: Request, res: Response, next: NextFunction) => user_controller.verifyOtp(req, res, next));
 
 // Verify BVN => GET
-router.route("/verify_bvn").get((req: Request, res: Response, next: NextFunction) => user_controller.verifyBvnData(req, res, next));
+// router.route("/verify_bvn").get((req: Request, res: Response, next: NextFunction) => user_controller.verifyBvnData(req, res, next));
 
 router.route("/register").post((req: Request, res: Response, next: NextFunction) => user_controller.registerUser(req, res, next))
 
@@ -32,25 +32,25 @@ router.route("/login").post((req: Request, res: Response, next: NextFunction) =>
 router.route("/logout").get((req: Request, res: Response, next: NextFunction) => user_controller.logoutUser(req, res));
 
 // fgt pwd => POST
-router.route("/forgot_password").post((req: Request, res: Response, next: NextFunction) => user_controller.forgotPassword(req, res, next));
+// router.route("/forgot_password").post((req: Request, res: Response, next: NextFunction) => user_controller.forgotPassword(req, res, next));
 
 // reset pwd => PATCH
-router.route("/reset_password").patch((req: Request, res: Response, next: NextFunction) => user_controller.resetPassword(req, res, next));
+// router.route("/reset_password").patch((req: Request, res: Response, next: NextFunction) => user_controller.resetPassword(req, res, next));
 
 // Protecting all routes after this middleware
 router.use(protect);
 
-router.route("/forgot-pin").post((req: Request, res: Response, next: NextFunction) => user_controller.forgotTransactionPin(req, res));
+// router.route("/forgot-pin").post((req: Request, res: Response, next: NextFunction) => user_controller.forgotTransactionPin(req, res));
 
-router.route("/reset-pin").post((req: Request, res: Response, next: NextFunction) => user_controller.resetTransactionPin(req, res));
+// router.route("/reset-pin").post((req: Request, res: Response, next: NextFunction) => user_controller.resetTransactionPin(req, res));
 
-router.route("/update-pin").patch((req: Request, res: Response) => user_controller.updateTransactionPin(req, res));
+// router.route("/update-pin").patch((req: Request, res: Response) => user_controller.updateTransactionPin(req, res));
 
 // update pwd => PATCH
-router.route("/update_password").patch((req: Request, res: Response, next: NextFunction) => {
-    user_controller
-        .updatePassword(req as ExtendRequest, res, next)
-        .catch(next)
-});
+// router.route("/update_password").patch((req: Request, res: Response, next: NextFunction) => {
+    // user_controller
+        // .updatePassword(req as ExtendRequest, res, next)
+        // .catch(next)
+// });
 
 export default router;

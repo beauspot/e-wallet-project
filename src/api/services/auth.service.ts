@@ -23,6 +23,7 @@ export class UserService implements UserSercviceInterface {
     
     constructor(private userEntity: typeof User, private userwalletEntity: typeof UserWallet, public twilio: TwilioConfig) { }
 
+    /*
     async SendOtp(phoneNumber: string): Promise<VerificationInstance> {
         const otp = await this.twilio.sendOtp(phoneNumber);
         return otp;
@@ -32,13 +33,14 @@ export class UserService implements UserSercviceInterface {
         const verifiedOTP = await this.twilio.verifyOtp(phoneNumber, otp);
         return verifiedOTP;
     }
-
+*/
     signToken(userId: string): string {
         return jwt.sign({ id: userId }, process.env.JWT_SECRET!, {
             expiresIn: process.env.JWT_EXPIRES_IN,
         });
     };
 
+    /*
     private createPasswordResetToken(user: Partial<User>) {
         const resetToken = crypto.randomBytes(32).toString("hex");
         user.passwordResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
@@ -52,6 +54,7 @@ export class UserService implements UserSercviceInterface {
         return resetToken;
     }
 
+    */
     // not needed as it already takes place on the corresponding model.
     private async hashPassword(password: string): Promise<string> {
         const saltRounds = 12;
@@ -91,7 +94,7 @@ export class UserService implements UserSercviceInterface {
     // TODO: need to setup endpoint to check for customer & admin
     async registerUser(userData: Partial<userInterface>, pin: string) {
         try {
-            const hashedPin = await this.hashPin(pin);
+            // const hashedPin = await this.hashPin(pin);
             const hashedPassword = userData.password ? await this.hashPassword(userData.password) : undefined;
 
             const UserRepository = AppDataSource.getRepository(this.userEntity)
@@ -100,7 +103,7 @@ export class UserService implements UserSercviceInterface {
 
             const UserWalletRepo = AppDataSource.getRepository(this.userwalletEntity)
             const wallet = UserWalletRepo.create({
-                transaction_pin: hashedPin,
+                transaction_pin: pin,
                 user: savedUser,
             });
             const savedWallet = await UserWalletRepo.save(wallet);
@@ -127,6 +130,7 @@ export class UserService implements UserSercviceInterface {
         }
     }
 
+    /*
     async verifyBvnData(firstName: string, lastName: string, bvn: string, dob: Date) {
         try {
             const result = await verifyBvn(firstName, lastName, bvn, dob);
@@ -268,6 +272,7 @@ export class UserService implements UserSercviceInterface {
             throw new AppError("Error", `${error.message}`, false);
         }
     }
+    */
 
     async logout(res: Response) {
         // set the cookie to expire immediately

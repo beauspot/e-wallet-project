@@ -17,7 +17,8 @@ export class UserController {
             const { userData, pin } = req.body;
             const result = await this.userService.registerUser(userData, pin);
             res.status(StatusCodes.CREATED).json(result);
-        } catch (error:any) {
+        } catch (error: any) {
+            // console.error(error);
             throw new AppError(`${error.message}`, "failed", false, StatusCodes.SERVICE_UNAVAILABLE)
         }
     }
@@ -33,6 +34,7 @@ export class UserController {
         }
     }
 
+    /*
     async sendOtp(req: Request, res: Response, next: NextFunction) {
         const { phoneNumber } = req.body;
         logging.info(phoneNumber)
@@ -49,6 +51,7 @@ export class UserController {
             throw new AppError(`${error.message}`, "failed", false, StatusCodes.SERVICE_UNAVAILABLE)
         }
     }
+
 
     async forgotPassword(req: Request, res: Response, next: NextFunction) {
         try {
@@ -112,7 +115,6 @@ export class UserController {
             return res.status(400).json({ error: error.message });
         }
     };
-
     async verifyBvnData(req: Request, res: Response, next: NextFunction) {
         try {
             const { firstName, lastName, bvn, dob } = req.body;
@@ -122,6 +124,7 @@ export class UserController {
             throw new AppError(`${error.message}`, "failed", false, StatusCodes.SERVICE_UNAVAILABLE)
         }
     };
+    */
 
     async logoutUser(req: Request, res: Response) {
         // Call the logout service to clear the jwt cookie 
