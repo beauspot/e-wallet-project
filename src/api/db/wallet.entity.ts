@@ -22,7 +22,7 @@ export class UserWallet extends BaseEntity {
   @Column({ type: 'float', default: 0.0 }) // Explicitly define the type
   balance: number;
 
-  @Column({ type: "varchar", length: 4, nullable: true })
+  @Column({ type: "varchar", length: 4, nullable: false })
   transaction_pin: string;
 
   @OneToOne(() => User, (user) => user.wallet)
@@ -36,6 +36,10 @@ export class UserWallet extends BaseEntity {
       const saltRounds = 12;
       this.transaction_pin = await bcrypt.hash(this.transaction_pin, saltRounds);
     }
+  }
+
+  async compareTransactionPin(pin: string): Promise<boolean> {
+    return bcrypt.compare(pin, this.transaction_pin);
   }
 
   @Column({ nullable: true })
