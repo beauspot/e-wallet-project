@@ -59,31 +59,10 @@ export class User {
   account_no: string;
 
   @Column({ type: "varchar", nullable: true })
-  businessName: string;
-
-  @Column({ type: "varchar", nullable: true })
   accountName: string;
-
-  @Column({ type: "varchar", nullable: true })
-  GovernmentIDImage: string;
-
-  @Column({ type: "varchar", nullable: true, default: "default.jpg" })
-  photo: string;
-
-  @Column({ type: "varchar", nullable: true })
-  state: string;
-
-  @Column({ type: "varchar", nullable: true })
-  lga: string;
 
   @Column({ type: "text", nullable: true })
   address: string;
-
-  @Column({ type: "text", nullable: true })
-  description: string;
-
-  @Column({ type: "boolean", default: true, select: false, nullable: true })
-  active: boolean;
 
   @Column({ type: "timestamp", nullable: true })
   passwordChangedAt: Date;
@@ -96,9 +75,6 @@ export class User {
 
   @Column({ type: "int", default: 0 })
   passwordResetAttempts: number;
-
-  @Column({ type: "boolean", nullable: true, default: false })
-  acceptTerms: boolean;
 
   @OneToOne(() => SettlementAcct, (settlementAcct) => settlementAcct.userAcct, {
     cascade: true,
@@ -116,6 +92,11 @@ export class User {
     cascade: true,
   })
   transactions: UserTransactionModel[];
+
+  @BeforeInsert()
+  generateAccountName() {
+    this.accountName = `${this.firstName} ${this.middleName} ${this.lastName}`
+    }
 
   @BeforeInsert()
   generateAccountID() {
