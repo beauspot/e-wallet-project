@@ -40,11 +40,14 @@ router.route("/logout").get((req: Request, res: Response, next: NextFunction) =>
 // Protecting all routes after this middleware
 router.use(protect);
 
-// router.route("/forgot-pin").post((req: Request, res: Response, next: NextFunction) => user_controller.forgotTransactionPin(req, res));
+// TODO: remember to validate the transaction Pin with zod so the length should be 4.
+router.route("/transaction_pin").post((req: Request, res: Response, next: NextFunction) => user_controller.createTransactionPin(req, res, next));
 
-// router.route("/reset-pin").post((req: Request, res: Response, next: NextFunction) => user_controller.resetTransactionPin(req, res));
+router.route("/forgot-pin").post((req: Request, res: Response, next: NextFunction) => user_controller.forgotTransactionPin(req, res));
 
-// router.route("/update-pin").patch((req: Request, res: Response) => user_controller.updateTransactionPin(req, res));
+router.route("/reset-pin").post((req: Request, res: Response, next: NextFunction) => user_controller.resetTransactionPin(req, res));
+
+router.route("/update-pin").patch((req: Request, res: Response) => user_controller.updateTransactionPin(req, res));
 
 // update pwd => PATCH
 // router.route("/update_password").patch((req: Request, res: Response, next: NextFunction) => {
