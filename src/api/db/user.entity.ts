@@ -3,19 +3,20 @@ import * as bcrypt from "bcryptjs";
 import {
   Entity,
   Column,
-  PrimaryGeneratedColumn,
   BeforeInsert,
   OneToMany,
   OneToOne,
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  PrimaryGeneratedColumn,
 } from "typeorm";
 import crypto from "crypto";
 import { UserWallet } from "@/db/wallet.entity";
 import { gender_enum, userRole } from "@/enum/user.enum";
 import { SettlementAcct } from "@/db/settlementAccts.entity";
 import { UserTransactionModel } from "@/db/transactions.entity";
+
 
 @Entity()
 export class User {
@@ -104,8 +105,8 @@ export class User {
   }
 
   @BeforeInsert()
-  generateId() {
-    this.id = `userID-${uuidv4()}`;
+  async generateId() {
+    this.id = uuidv4();
   }
 
   @CreateDateColumn()
