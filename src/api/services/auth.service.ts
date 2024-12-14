@@ -8,6 +8,7 @@ import { Response } from "express";
 // Entities imported
 import { User } from "@/db/user.entity";
 import { UserWallet } from "@/db/wallet.entity";
+import logging from "@/utils/logging"
 
 import { Email } from "@/api/helpers/integrations/email";
 import AppError from "@/utils/appErrors";
@@ -47,15 +48,16 @@ export class UserService implements UserSercviceInterface {
         user.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 min expiration
         return resetToken;
     }
-    private createPinResetToken(user: Partial<User>) {
-        const resetToken = crypto.randomBytes(32).toString("hex");
-        user.passwordResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
-        user.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 min expiration
-        return resetToken;
-    }
 
     */
     // not needed as it already takes place on the corresponding model.
+
+    private createPinResetToken(userWallet: Partial<UserWallet>) {
+        const resetToken = crypto.randomBytes(32).toString("hex");
+        userWallet.transactionPinResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+        userWallet.transactionPinResetExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 min expiration
+        return resetToken;
+    }
     private async hashPassword(password: string): Promise<string> {
         const saltRounds = 12;
         return bcrypt.hash(password, saltRounds);
@@ -92,28 +94,32 @@ export class UserService implements UserSercviceInterface {
 
     // TODO: There are 2 categories of users admin & customer.
     // TODO: need to setup endpoint to check for customer & admin
-    async registerUser(userData: Partial<userInterface>, pin: string) {
+    async registerUser(userData: Partial<userInterface>) {
         try {
+            if (!userData.password) throw new AppError("Password Required");
             // const hashedPin = await this.hashPin(pin);
             const hashedPassword = userData.password ? await this.hashPassword(userData.password) : undefined;
 
-            const UserRepository = AppDataSource.getRepository(this.userEntity)
-            const user = UserRepository.create({ ...userData, password: hashedPassword});
-            const savedUser = await UserRepository.save(user);
+            const UserRepository = AppDataSource.getRepository(this.userEntity).create({ ...userData, password: hashedPassword })
+            // const user = UserRepository
+            const savedUser = await AppDataSource.getRepository(this.userEntity).save(UserRepository);
 
-            const UserWalletRepo = AppDataSource.getRepository(this.userwalletEntity)
-            const wallet = UserWalletRepo.create({
-                transaction_pin: pin,
-                user: savedUser,
-            });
-            const savedWallet = await UserWalletRepo.save(wallet);
-
-            return { user: savedUser, wallet: savedWallet };
+            logging.info("Saved User: ", savedUser);
+            return { user: savedUser, password: savedUser.password };
         } catch (error: any) {
-            // logging.log(`error message: ${error.message}`);
+            logging.error(`error message: ${error.message}`);
             throw new AppError("Error registering user", `${error.message}`, false);
         }
     };
+
+    async createTransactionPin(pin: string): Promise<{ userWallet: string }> {
+        const UserWalletRepo = AppDataSource.getRepository(this.userwalletEntity)
+        const wallet = UserWalletRepo.create({
+            transaction_pin: pin,
+        });
+        const savedWallet = await UserWalletRepo.save(wallet);
+        return { userWallet: savedWallet.transaction_pin }
+    }
 
     async loginUser(phoneNumber: string, password: string) {
         if (!phoneNumber || !password) throw new AppError("Provide phone and password!", "failed", false);
@@ -127,6 +133,79 @@ export class UserService implements UserSercviceInterface {
         } catch (error: any) {
             // logging.error(`Error in user: ${error.message}`);
             throw new AppError("login failed", `${error.message}`, false);
+        }
+    }
+
+
+    async forgotTransactionPin(email: string) {
+        try {
+            const user = await AppDataSource.getRepository(User)
+                .createQueryBuilder("user")
+                .leftJoinAndSelect("user.wallet", "wallet")
+                .where("user.email = :email", { email })
+                .getOne();
+
+            if (!user) throw new Error("There is no user with that email address.");
+
+            const pinResetToken = this.createPinResetToken(user.wallet);
+            await AppDataSource.getRepository(this.userEntity).save(user.wallet);
+
+            await new Email(user, pinResetToken).sendPinReset();
+            return pinResetToken;
+        } catch (error: any) {
+            throw new AppError("Error", `${error.message}`, false);
+        }
+    }
+
+    async resetTransactionPin(email: string, otp: string, newPassword: string) {
+        const hashedToken = crypto.createHash("sha256").update(otp).digest("hex");
+        try {
+            const user = await AppDataSource.getRepository(this.userEntity)
+                .createQueryBuilder("user")
+                .leftJoinAndSelect("user.wallet", "wallet")
+                .where("user.email = :email", { email })
+                .getOne();
+
+            if (!user || user.wallet.transactionPinResetToken !== hashedToken || user.wallet.transactionPinTokenExpires! < new Date()) {
+                throw new Error("Invalid OTP or OTP has expired.");
+            }
+
+            user.wallet.transaction_pin = await bcrypt.hash(newPassword, 12);
+            user.wallet.transactionPinResetToken = "";
+            user.wallet.transactionPinTokenExpires = new Date() || undefined;
+
+            await AppDataSource.getRepository(this.userwalletEntity).save(user.wallet);
+
+            return this.signToken(user.id);
+        } catch (error: any) {
+            throw new AppError("Error", `${error.message}`, false);
+        }
+    }
+
+    async updateTransactionPin(userId: string, currentPin: string, newPin: string) {
+        try {
+            const user = await AppDataSource.getRepository(this.userEntity).createQueryBuilder("user")
+                .leftJoinAndSelect("user.wallet", "wallet")
+                .where("user.id = :id", { id: userId })
+                .select(["wallet.transaction_pin"])
+                .getOne();
+
+            if (!user || !(await this.verifyPassword(currentPin, user.wallet.transaction_pin))) {
+                throw new AppError("User not found or wallet not associated.");
+            }
+
+            const isValidPin = await bcrypt.compare(currentPin, user.wallet.transaction_pin);
+            if (!isValidPin) {
+                throw new AppError("Your current transaction pin is incorrect.");
+            };
+
+            user.wallet.transaction_pin = await bcrypt.hash(newPin, 12);
+
+            await AppDataSource.getRepository(UserWallet).save(user.wallet);
+
+            return this.signToken(user.id);
+        } catch (error: any) {
+            throw new AppError("Error", `${error.message}`, false);
         }
     }
 
@@ -158,26 +237,6 @@ export class UserService implements UserSercviceInterface {
         }
     }
 
-    async forgotTransactionPin(email: string) {
-        try {
-            const user = await AppDataSource.getRepository(User)
-                .createQueryBuilder("user")
-                .leftJoinAndSelect("user.wallet", "wallet")
-                .where("user.email = :email", { email })
-                .getOne();
-
-            if (!user) throw new Error("There is no user with that email address.");
-
-            const pinResetToken = this.createPinResetToken(user.wallet);
-            await AppDataSource.getRepository(this.userEntity).save(user.wallet);
-
-            await new Email(user, pinResetToken).sendPinReset();
-            return pinResetToken;
-        } catch (error: any) {
-            throw new AppError("Error", `${error.message}`, false);
-        }
-    }
-
     async resetPassword(email: string, otp: string, newPassword: string) {
         const hashedToken = crypto.createHash("sha256").update(otp).digest("hex");
         try {
@@ -199,30 +258,6 @@ export class UserService implements UserSercviceInterface {
         }
     }
 
-    async resetTransactionPin(email: string, otp: string, newPassword: string) {
-        const hashedToken = crypto.createHash("sha256").update(otp).digest("hex");
-        try {
-            const user = await AppDataSource.getRepository(this.userEntity)
-                .createQueryBuilder("user")
-                .leftJoinAndSelect("user.wallet", "wallet")
-                .where("user.email = :email", { email })
-                .getOne();
-
-            if (!user || user.wallet.transactionPinResetToken !== hashedToken || user.wallet.transactionPinTokenExpires! < new Date()) {
-                throw new Error("Invalid OTP or OTP has expired.");
-            }
-
-            user.wallet.transaction_pin = await bcrypt.hash(newPassword, 12);
-            user.wallet.transactionPinResetToken = "";
-            user.wallet.transactionPinTokenExpires = new Date() || undefined;
-
-            await AppDataSource.getRepository(this.userwalletEntity).save(user.wallet);
-
-            return this.signToken(user.id);
-        } catch (error: any) {
-            throw new AppError("Error", `${error.message}`, false);
-        }
-    }
 
     async updatePassword(userId: string, currentPassword: string, newPassword: string) {
         try {
@@ -239,33 +274,6 @@ export class UserService implements UserSercviceInterface {
             user.password = await bcrypt.hash(newPassword, 12);
 
             await AppDataSource.getRepository(this.userEntity).save(user);
-
-            return this.signToken(user.id);
-        } catch (error: any) {
-            throw new AppError("Error", `${error.message}`, false);
-        }
-    }
-
-    async updateTransactionPin(userId: string, currentPin: string, newPin: string) {
-        try {
-            const user = await AppDataSource.getRepository(this.userEntity).createQueryBuilder("user")
-                .leftJoinAndSelect("user.wallet", "wallet")
-                .where("user.id = :id", { id: userId })
-                .select(["wallet.transaction_pin"])
-                .getOne();
-
-            if (!user || !(await this.verifyPassword(currentPin, user.wallet.transaction_pin))) {
-                throw new AppError("User not found or wallet not associated.");
-            }
-
-            const isValidPin = await bcrypt.compare(currentPin, user.wallet.transaction_pin);
-            if (!isValidPin) {
-                throw new AppError("Your current transaction pin is incorrect.");
-            };
-
-            user.wallet.transaction_pin = await bcrypt.hash(newPin, 12);
-
-            await AppDataSource.getRepository(UserWallet).save(user.wallet);
 
             return this.signToken(user.id);
         } catch (error: any) {
