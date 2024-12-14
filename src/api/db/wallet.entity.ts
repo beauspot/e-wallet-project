@@ -13,6 +13,7 @@ import {
   BeforeUpdate
 } from "typeorm";
 import { User } from "@/db/user.entity";
+import crypto from "crypto";
 
 @Entity()
 export class UserWallet extends BaseEntity {
@@ -22,7 +23,7 @@ export class UserWallet extends BaseEntity {
   @Column({ type: 'float', default: 0.0 }) // Explicitly define the type
   balance: number;
 
-  @Column({ type: "varchar", length: 4, nullable: false })
+  @Column({ type: "varchar", length: 255, nullable: false })
   transaction_pin: string;
 
   @OneToOne(() => User, (user) => user.wallet)
@@ -38,9 +39,14 @@ export class UserWallet extends BaseEntity {
     }
   }
 
+  @Column({ type: "timestamp", nullable: true })
+  transactionPinResetExpires: Date;
   async compareTransactionPin(pin: string): Promise<boolean> {
     return bcrypt.compare(pin, this.transaction_pin);
   }
+
+  @Column({ type: "int", default: 0 })
+  transaction_pinResetAttempts: number;
 
   @Column({ nullable: true })
   transactionPinResetToken: string;
@@ -53,9 +59,17 @@ export class UserWallet extends BaseEntity {
 
   @BeforeInsert()
   generateId() {
-    this.id = `walletID-${uuidv4()}`;
+    this.id = uuidv4();
   }
 
   @CreateDateColumn()
   createdAt: Date;
+
+  createPinResetToken(): string {
+    const otp = crypto.randomBytes(3).toString("hex");
+    this.transactionPinResetToken = crypto.createHash("sha256").update(otp).digest("hex");
+    this.transactionPinResetExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
+    this.transaction_pinResetAttempts = 0;
+    return otp;
+  }
 }
