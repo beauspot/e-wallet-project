@@ -30,7 +30,7 @@
       "@/controllers/*": ["./src/api/controllers/*"],
       "@/routes/*": ["./src/api/routes/*"],
       "@/services/*": ["./src/api/services/*"],
-      "@/schemas/*": ["./src/api/schemas/*"],
+      "@/schemas/*": ["./src/api/helpers/schemas/*"],
       "@/configs/*": ["./src/api/helpers/configs/*"],
       "@/DTO/*": ["./src/api/helpers/DTO/*"],
       "@/enum/*": ["./src/api/helpers/enum/*"],
