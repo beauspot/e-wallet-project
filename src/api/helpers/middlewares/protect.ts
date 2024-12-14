@@ -34,12 +34,12 @@ export const protect = ExpressAsync(
         }
 
         // 2) Verify token
-        const decoded = await verifyToken(token, process.env.JWT_SECCRET as string)
+        const decoded = await verifyToken(token, process.env.JWT_SECRET as string)
 
         // 3) Check if user still exists
         const currentUser = await UserRepository.findOneBy({ id: decoded.id });
         if (!currentUser) {
-            return next(new AppError("The user belonging to this token nolonger exists.", "failed to get user", false, 401));
+            return next(new AppError("The user belonging to this token no longer exists.", "failed to get user", false, 401));
         }
 
         // 4) Check if user changed password after the token was issued
