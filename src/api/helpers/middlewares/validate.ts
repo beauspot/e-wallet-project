@@ -3,9 +3,10 @@ import { Request, Response, NextFunction } from "express";
 
 export const validate =
   (schema: AnyZodObject) =>
-    (req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response, next: NextFunction) => {
       try {
-        schema.parse({
+        // Use parseAsync to handle async validations
+        await schema.parseAsync({
           body: req.body,
           query: req.query,
           params: req.params,
