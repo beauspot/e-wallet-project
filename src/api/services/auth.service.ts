@@ -104,8 +104,8 @@ export class UserService implements UserSercviceInterface {
             // const user = UserRepository
             const savedUser = await AppDataSource.getRepository(this.userEntity).save(UserRepository);
 
-            logging.info("Saved User: ", savedUser);
-            return { user: savedUser, password: savedUser.password };
+            // logging.info("Saved User: ", JSON.stringify(savedUser, null, 2));
+            return { user: savedUser };
         } catch (error: any) {
             logging.error(`error message: ${error.message}`);
             throw new AppError("Error registering user", `${error.message}`, false);
