@@ -6,7 +6,9 @@ import { UserWallet } from "@/db/wallet.entity";
 import { UserService } from "@/services/auth.service";
 import { validate } from "@/helpers/middlewares/validate";
 import { UserController } from "@/controllers/auth.controller";
-import { ExtendRequest } from "@/interfaces/extendRequest.interface";
+// import { ExtendRequest } from "@/interfaces/extendRequest.interface";
+
+import { createUserSchema, loginUserSchema } from "@/schemas/user.schema";
 
 const twilioConfigInstance = new TwilioConfig("", "");
 const user_service = new UserService(User, UserWallet, twilioConfigInstance);
@@ -24,9 +26,9 @@ const router = Router();
 // Verify BVN => GET
 // router.route("/verify_bvn").get((req: Request, res: Response, next: NextFunction) => user_controller.verifyBvnData(req, res, next));
 
-router.route("/register").post((req: Request, res: Response, next: NextFunction) => user_controller.registerUser(req, res, next))
+router.route("/register").post(validate(createUserSchema), (req: Request, res: Response, next: NextFunction) => user_controller.registerUser(req, res, next))
 
-router.route("/login").post((req: Request, res: Response, next: NextFunction) => user_controller.loginUser(req, res, next));
+router.route("/login").post(validate(loginUserSchema), (req: Request, res: Response, next: NextFunction) => user_controller.loginUser(req, res, next));
 
 // Loout => GET
 router.route("/logout").get((req: Request, res: Response, next: NextFunction) => user_controller.logoutUser(req, res));
